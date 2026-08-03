@@ -51,7 +51,7 @@ document.getElementById("scoreboard-list").addEventListener("click", (e) => {
   if (!team) return;
 
   if (btn.dataset.role === "inc") team.score += 5;
-  if (btn.dataset.role === "dec") team.score = Math.max(0, team.score - 5);
+  if (btn.dataset.role === "dec") team.score -= 5;
   if (btn.dataset.role === "remove") teams = teams.filter(t => t.id !== id);
 
   render();
