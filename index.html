@@ -3,611 +3,1106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Missão Front-End: ID vs CLASS 🚀</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Ícones amigáveis para crianças -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Propriedades CSS Iniciais</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f0efe9;
+      --border: #e2e0d8;
+      --text: #1a1917;
+      --text2: #6b6a65;
+      --text3: #9e9d97;
+      --accent: #1D9E75;
+      --accent-light: #E1F5EE;
+      --accent-dark: #0F6E56;
+      --code-bg: #1e1e2e;
+      --code-text: #cdd6f4;
+      --code-val: #a6e3a1;
+      --code-tag: #f38ba8;
+      --code-attr: #fab387;
+      --code-str: #a6e3a1;
+      --code-comment: #585b70;
+      --radius: 12px;
+      --radius-sm: 7px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #1D9E75, #378ADD, #534AB7, #D85A30);
+    }
+    .header-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
+      background: var(--accent-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .header h1 span { color: var(--accent); }
+    .header p {
+      font-size: 1rem;
+      color: var(--text2);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .header-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.4rem; font-weight: 700; color: var(--text); }
+    .stat-lbl { font-size: 12px; color: var(--text3); }
+
+    /* MAIN */
+    .main { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem; }
+
+    /* CARD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    /* CARD HEADER — prop name + reveal button */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .prop-tag {
+      font-family: 'Courier New', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--surface2);
+      padding: 4px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    /* Description — hidden by default, revealed on click */
+    .prop-desc {
+      font-size: 0.9rem;
+      color: var(--text2);
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+    .prop-desc.revealed { display: block; }
+
+    /* Reveal button */
+    .reveal-btn {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--accent);
+      background: transparent;
+      color: var(--accent-dark);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .reveal-btn:hover {
+      background: var(--accent-light);
+      transform: scale(1.03);
+    }
+    .reveal-btn.done {
+      border-color: var(--border);
+      color: var(--text3);
+      background: var(--surface2);
+      cursor: default;
+      transform: none;
+    }
+    .reveal-btn .btn-icon { font-size: 14px; transition: transform 0.3s; }
+
+
+    /* CARD BODY */
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 220px;
+    }
+    @media (max-width: 620px) {
+      .card-body { grid-template-columns: 1fr; }
+    }
+
+    /* DEMO PANEL */
+    .demo-panel {
+      padding: 1.5rem;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    @media (max-width: 620px) {
+      .demo-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+    .panel-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text3);
+    }
+    .demo-stage {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      flex: 1;
+      position: relative;
+    }
+    .controls { display: flex; flex-direction: column; gap: 10px; }
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ctrl-row label {
+      font-size: 12px;
+      color: var(--text2);
+      min-width: 90px;
+    }
+    .ctrl-row input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .val-badge {
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      color: var(--accent-dark);
+      background: var(--accent-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+      min-width: 54px;
+      text-align: center;
+    }
+    .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+    .swatch {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { border-color: var(--text); }
+    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-opt {
+      font-size: 12px;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Courier New', monospace;
+    }
+    .btn-opt:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-opt.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      font-weight: 600;
+    }
+
+    /* CODE PANEL — hidden by default */
+    .code-panel {
+      background: var(--code-bg);
+      padding: 1.25rem 1.5rem;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      animation: slideIn 0.4s ease;
+    }
+    .code-panel.revealed { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Hidden placeholder shown before reveal */
+    .code-placeholder {
+      background: var(--code-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 2rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 1px solid #313244;
+    }
+    .code-placeholder:hover { background: #252535; }
+    .code-placeholder.hidden { display: none; }
+    .code-placeholder-icon {
+      font-size: 28px;
+      opacity: 0.3;
+      filter: blur(1px);
+    }
+    .code-placeholder-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      width: 80%;
+    }
+    .code-placeholder-line {
+      height: 10px;
+      border-radius: 4px;
+      background: #313244;
+      filter: blur(3px);
+    }
+    .code-placeholder-hint {
+      font-size: 11px;
+      color: #585b70;
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+    }
+
+    .code-panel-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #585b70;
+    }
+    pre.code-block {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--code-text);
+      white-space: pre-wrap;
+      word-break: break-all;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .c-tag { color: var(--code-tag); }
+    .c-attr { color: var(--code-attr); }
+    .c-str { color: var(--code-str); }
+    .c-prop { color: #89b4fa; }
+    .c-val-dynamic { color: var(--code-val); font-weight: 600; }
+    .c-comment { color: var(--code-comment); font-style: italic; }
+    .c-punc { color: #6c7086; }
+
+    .result-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #313244;
+      color: #a6adc8;
+      font-family: 'Courier New', monospace;
+      margin-top: 4px;
+      transition: all 0.3s;
+    }
+    .result-tag strong { color: var(--code-val); }
+
+    /* Demo elements */
+    .demo-text-el {
+      font-size: 22px;
+      font-weight: 500;
+      transition: all 0.3s;
+      color: var(--text);
+      text-align: center;
+    }
+    .demo-box {
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 13px;
+      color: var(--text3);
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Barra Lateral de Navegação -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <i class="fa-solid fa-code-branch brand-icon"></i>
-      <h2>Passos Mágicos</h2>
-      <span>Aula: ID e Class</span>
+<header class="header">
+  <div class="header-badge">Aula interativa</div>
+  <h1>Propriedades <span>CSS</span> para iniciantes</h1>
+  <p>Experimente cada propriedade, tente adivinhar o que ela faz e depois revele o código.</p>
+</header>
+
+<main class="main">
+
+  <!-- ===== COLOR ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Coloração</span>
+      <span class="prop-desc" id="desc-color">Muda a cor do texto de um elemento.</span>
+      <button class="reveal-btn" onclick="reveal('color', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
     </div>
-    
-    <nav class="nav-menu">
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-
-      <button class="nav-item active" data-tab="welcome">
-        <i class="fa-solid fa-house"></i> <span>🏠 Início</span>
-      </button>
-      <button class="nav-item" data-tab="class-concept">
-        <i class="fa-solid fa-users"></i> <span>👥 O que é Class?</span>
-      </button>
-      <button class="nav-item" data-tab="id-concept">
-        <i class="fa-solid fa-id-card"></i> <span>🆔 O que é ID?</span>
-      </button>
-      <button class="nav-item" data-tab="compare-table">
-        <i class="fa-solid fa-scale-balanced"></i> <span>⚖️ ID vs Class</span>
-      </button>
-      <button class="nav-item" data-tab="game-associate">
-        <i class="fa-solid fa-gamepad"></i> <span>🎮 Jogo: Qual o Tipo?</span>
-      </button>
-      <button class="nav-item" data-tab="game-code">
-        <i class="fa-solid fa-puzzle-piece"></i> <span>🧩 Jogo: Código Secreto</span>
-      </button>
-      <button class="nav-item" data-tab="sandbox">
-        <i class="fa-solid fa-flask"></i> <span>🧪 Lab dos Aliens</span>
-      </button>
-      <button class="nav-item" data-tab="practice">
-        <i class="fa-solid fa-laptop-code"></i> <span>💻 Mão na Massa</span>
-      </button>
-    </nav>
-  </aside>
-
-  <!-- Conteúdo Principal -->
-  <main class="main-content">
-
-    <!-- TAB 1: BOAS VINDAS -->
-    <section class="tab-panel active" id="welcome">
-      <div class="welcome-card">
-        <div class="sparkles-container">🌟 🚀 ✨ 👾</div>
-        <h1 class="glow-text">Bem-vindo à Missão: ID vs CLASS!</h1>
-        <p class="subtitle">Hoje você vai aprender a dar estilo às suas páginas web como um verdadeiro mestre! Vamos descobrir a diferença entre grupos e identidades únicas.</p>
-        
-        <div class="adventure-banner">
-          <div class="banner-text">
-            <h3>Sua missão hoje:</h3>
-            <ul>
-              <li><i class="fa-solid fa-check text-accent"></i> Descobrir como mudar a cor de vários elementos juntos (Class)</li>
-              <li><i class="fa-solid fa-check text-accent"></i> Descobrir como aplicar um estilo exclusivo a um único elemento (ID)</li>
-              <li><i class="fa-solid fa-check text-accent"></i> Vencer dois desafios e desbloquear o Laboratório dos Aliens</li>
-            </ul>
-          </div>
-          <div class="banner-character">👾</div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <span id="color-text" class="demo-text-el" style="color:#1D9E75;">Olá, mundo!</span>
         </div>
-
-        <button class="btn-start next-tab-btn" data-next="class-concept">
-          Começar Aventura <i class="fa-solid fa-arrow-right"></i>
-        </button>
-      </div>
-    </section>
-
-    <!-- TAB 2: CONCEITO DE CLASS -->
-    <section class="tab-panel" id="class-concept">
-      <div class="card">
-        <div class="card-header">
-          <span class="badge badge-class">Grupo</span>
-          <h2>A Classe: O Uniforme do Grupo (<code>class</code>)</h2>
-        </div>
-        <div class="card-body-layout">
-          <div class="content-text">
-            <p class="explanation">
-              Pense na **Class (Classe)** como o <strong>uniforme da sua escola</strong>, a cor da camiseta de um time ou até uma raça de cachorro (como todos os "Poodles"). 
-            </p>
-            <p class="explanation-sub">
-              Se 10 alunos vestem o uniforme azul da escola, todos compartilham a mesma característica visual. No CSS, se usamos uma classe, podemos estilizar vários elementos de uma vez só!
-            </p>
-
-            <div class="analogy-box">
-              <h4>🎭 Exemplos no Mundo Real:</h4>
-              <ul>
-                <li><i class="fa-solid fa-shirt"></i> O uniforme azul dos alunos da sala</li>
-                <li><i class="fa-solid fa-gamepad"></i> Todos os minérios do Minecraft</li>
-                <li><i class="fa-solid fa-soccer-ball"></i> Os jogadores da seleção do Brasil na Copa</li>
-              </ul>
-            </div>
-
-            <div class="syntax-box">
-              <h4>📝 Como se escreve:</h4>
-              <div class="code-editor">
-                <div class="code-title">HTML</div>
-                <pre><code><span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="string">"time-azul"</span><span class="tag">&gt;</span>João<span class="tag">&lt;/p&gt;</span>
-<span class="tag">&lt;p</span> <span class="attr">class</span>=<span class="string">"time-azul"</span><span class="tag">&gt;</span>Mariana<span class="tag">&lt;/p&gt;</span></code></pre>
-                
-                <div class="code-title">CSS</div>
-                <pre><code><span class="comment">/* O ponto (.) indica que é uma CLASS! */</span>
-<span class="selector">.time-azul</span> {
-  <span class="property">color</span>: <span class="value">blue</span>;
-  <span class="property">font-weight</span>: <span class="value">bold</span>;
-}</code></pre>
-              </div>
-            </div>
-          </div>
-
-          <div class="content-visual">
-            <div class="visual-container class-visual">
-              <div class="visual-title">CSS em Ação: .time-azul</div>
-              <div class="students-grid">
-                <div class="student-avatar shirt-blue">
-                  <div class="avatar-head">👦</div>
-                  <div class="avatar-tag">&lt;p class="time-azul"&gt;</div>
-                </div>
-                <div class="student-avatar shirt-blue">
-                  <div class="avatar-head">👧</div>
-                  <div class="avatar-tag">&lt;p class="time-azul"&gt;</div>
-                </div>
-                <div class="student-avatar shirt-blue">
-                  <div class="avatar-head">🧑</div>
-                  <div class="avatar-tag">&lt;p class="time-azul"&gt;</div>
-                </div>
-              </div>
-              <p class="visual-caption">Todos os parágrafos com a classe <strong>time-azul</strong> ficam de camiseta azul automaticamente!</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn-secondary prev-tab-btn" data-prev="welcome"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-          <button class="btn-primary next-tab-btn" data-next="id-concept">Próximo Conceito <i class="fa-solid fa-arrow-right"></i></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 3: CONCEITO DE ID -->
-    <section class="tab-panel" id="id-concept">
-      <div class="card">
-        <div class="card-header">
-          <span class="badge badge-id">Exclusivo</span>
-          <h2>O ID: A Identidade Secreta Única (<code>id</code>)</h2>
-        </div>
-        <div class="card-body-layout">
-          <div class="content-text">
-            <p class="explanation">
-              Pense no **ID** como a sua **carteira de identidade (RG)**, sua impressão digital ou o seu **nickname único** no jogo. 
-            </p>
-            <p class="explanation-sub">
-              Não existem duas pessoas com a mesma identidade ou placa de carro! Por isso, o ID é usado para alterar **exclusivamente um elemento único** na página toda. Nunca repita o mesmo ID em mais de um elemento!
-            </p>
-
-            <div class="analogy-box">
-              <h4>🎭 Exemplos no Mundo Real:</h4>
-              <ul>
-                <li><i class="fa-solid fa-id-card"></i> O número do seu RG ou CPF</li>
-                <li><i class="fa-solid fa-fingerprint"></i> A sua impressão digital</li>
-                <li><i class="fa-solid fa-at"></i> O apelido exclusivo <code>super_ninja_123</code> no Roblox</li>
-              </ul>
-            </div>
-
-            <div class="syntax-box">
-              <h4>📝 Como se escreve:</h4>
-              <div class="code-editor">
-                <div class="code-title">HTML</div>
-                <pre><code><span class="tag">&lt;p</span> <span class="attr">id</span>=<span class="string">"capitao"</span><span class="tag">&gt;</span>Carlos<span class="tag">&lt;/p&gt;</span></code></pre>
-                
-                <div class="code-title">CSS</div>
-                <pre><code><span class="comment">/* A hashtag (#) indica que é um ID! */</span>
-<span class="selector">#capitao</span> {
-  <span class="property">color</span>: <span class="value">gold</span>;
-  <span class="property">font-size</span>: <span class="value">24px</span>;
-}</code></pre>
-              </div>
-            </div>
-          </div>
-
-          <div class="content-visual">
-            <div class="visual-container id-visual">
-              <div class="visual-title">CSS em Ação: #capitao</div>
-              <div class="students-grid flex-column">
-                <div class="student-avatar shirt-gray">
-                  <div class="avatar-head">👦</div>
-                  <div class="avatar-tag">&lt;p&gt; comum</div>
-                </div>
-                <div class="student-avatar shirt-gold pulse-effect">
-                  <div class="avatar-head">👑 🧑</div>
-                  <div class="avatar-tag">&lt;p id="capitao"&gt;</div>
-                </div>
-                <div class="student-avatar shirt-gray">
-                  <div class="avatar-head">👧</div>
-                  <div class="avatar-tag">&lt;p&gt; comum</div>
-                </div>
-              </div>
-              <p class="visual-caption">Apenas o elemento com o ID <strong>capitao</strong> ganha a coroa e a roupa dourada!</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn-secondary prev-tab-btn" data-prev="class-concept"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-          <button class="btn-primary next-tab-btn" data-next="compare-table">Tabela Comparativa <i class="fa-solid fa-arrow-right"></i></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 4: TABELA COMPARATIVA -->
-    <section class="tab-panel" id="compare-table">
-      <div class="card">
-        <div class="card-header">
-          <span class="badge badge-accent">Resumo</span>
-          <h2>A Batalha Final: ID vs CLASS</h2>
-        </div>
-        
-        <div class="compare-container">
-          <div class="compare-card class-side">
-            <div class="compare-icon"><i class="fa-solid fa-users"></i></div>
-            <h3>. CLASS (Classe)</h3>
-            <ul class="compare-list">
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>Pode ser repetida:</strong> Use em quantos elementos quiser.</li>
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>Significado:</strong> Um grupo, um uniforme, um estilo compartilhado.</li>
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>No CSS:</strong> Começa com um ponto simples: <code>.nome-da-classe</code></li>
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>Exemplo HTML:</strong> <code>class="texto-amarelo"</code></li>
-            </ul>
-          </div>
-
-          <div class="compare-card id-side">
-            <div class="compare-icon"><i class="fa-solid fa-id-card"></i></div>
-            <h3># ID (Identificador)</h3>
-            <ul class="compare-list">
-              <li><i class="fa-solid fa-circle-xmark text-red"></i> <strong>NÃO pode ser repetido:</strong> Use apenas uma vez por página!</li>
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>Significado:</strong> Uma identidade única, um destaque exclusivo.</li>
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>No CSS:</strong> Começa com uma hashtag: <code>#nome-do-id</code></li>
-              <li><i class="fa-solid fa-circle-check text-green"></i> <strong>Exemplo HTML:</strong> <code>id="botao-destaque"</code></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn-secondary prev-tab-btn" data-prev="id-concept"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-          <button class="btn-primary next-tab-btn" data-next="game-associate">Começar o Jogo! 🎮 <i class="fa-solid fa-gamepad"></i></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TAB 5: JOGO 1 - QUAL O TIPO? -->
-    <section class="tab-panel" id="game-associate">
-      <div class="card">
-        <div class="card-header flex-between">
+        <div class="controls">
           <div>
-            <span class="badge badge-game">Mini-Game 1</span>
-            <h2>Desafio de Associação: ID ou CLASS? 🌟</h2>
-          </div>
-          <div class="score-board">
-            Pontuação: <span id="game1-score">0</span>/10 | Erros: <span id="game1-errors">0</span>
-          </div>
-        </div>
-
-        <!-- Tela de Jogo Activa -->
-        <div class="game-container" id="game1-active-screen">
-          <div class="game-progress">
-            <div class="progress-steps" id="game1-dots">
-              <!-- Dots controlados por JS -->
-            </div>
-          </div>
-          
-          <div class="card-quiz-container">
-            <div class="quiz-card-element" id="quiz-card">
-              <div class="quiz-card-image" id="quiz-card-icon">
-                <i class="fa-solid fa-id-card"></i>
-              </div>
-              <h3 id="quiz-card-title">O número do seu RG</h3>
-              <p id="quiz-card-description">O seu documento de identidade nacional. Ele serve para provar quem você é.</p>
-            </div>
-          </div>
-
-          <div class="quiz-options">
-            <button class="btn-option btn-class-option" onclick="submitAnswer('class')">
-              <span class="option-symbol">.</span>
-              <span class="option-label">CLASS (Grupo / Uniforme)</span>
-            </button>
-            <button class="btn-option btn-id-option" onclick="submitAnswer('id')">
-              <span class="option-symbol">#</span>
-              <span class="option-label">ID (Único / Exclusivo)</span>
-            </button>
-          </div>
-
-          <!-- Feedback de resposta -->
-          <div class="quiz-feedback hidden" id="quiz-feedback-box">
-            <div class="feedback-content">
-              <span class="feedback-icon" id="quiz-feedback-icon">🎉</span>
-              <p class="feedback-text" id="quiz-feedback-text">Correto! Excelente raciocínio.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tela de Fim de Jogo 1 -->
-        <div class="game-end-screen hidden" id="game1-end-screen">
-          <div class="trophy-animation">🏆</div>
-          <h2>Incrível! Você concluiu o primeiro desafio!</h2>
-          <p id="game1-final-message">Você acertou tudo e provou que sabe a diferença entre o singular e o coletivo!</p>
-          <div class="stars-rating" id="game1-stars">
-            ⭐⭐⭐
-          </div>
-          <div class="end-actions">
-            <button class="btn-secondary" onclick="restartGame1()"><i class="fa-solid fa-rotate-left"></i> Jogar de Novo</button>
-            <button class="btn-primary next-tab-btn" data-next="game-code">Próximo Desafio 🧩</button>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- TAB 6: JOGO 2 - CÓDIGO SECRETO -->
-    <section class="tab-panel" id="game-code">
-      <div class="card">
-        <div class="card-header flex-between">
-          <div>
-            <span class="badge badge-game">Mini-Game 2</span>
-            <h2>Desafio do Código Secreto: Complete a Sintaxe 🧩</h2>
-          </div>
-          <div class="score-board">
-            Desafio: <span id="game2-current">1</span>/5
-          </div>
-        </div>
-
-        <div class="game-container" id="game2-active-screen">
-          <p class="game-intro-text">Observe o objetivo do site e clique na opção correta que preenche o espaço em branco <strong>(___)</strong>.</p>
-          
-          <div class="code-challenge-box">
-            <div class="challenge-mission">
-              <span class="mission-icon"><i class="fa-solid fa-bullseye"></i></span>
-              <span class="mission-desc" id="game2-mission-text">Estilizar o título principal da página, que deve ser único.</span>
-            </div>
-
-            <div class="code-snippet-box">
-              <div class="code-header-bar">
-                <span>HTML</span>
-              </div>
-              <pre class="code-display" id="game2-html-snippet"><code>&lt;h1 <span class="hl-blank" id="html-blank">___</span>="titulo-site"&gt;Meu Site&lt;/h1&gt;</code></pre>
-
-              <div class="code-header-bar margin-top-sm">
-                <span>CSS</span>
-              </div>
-              <pre class="code-display" id="game2-css-snippet"><code><span class="hl-blank" id="css-blank">___</span>titulo-site {
-  color: purple;
-}</code></pre>
-            </div>
-          </div>
-
-          <div class="quiz-options-grid" id="game2-options">
-            <!-- Gerado por JS dependendo do exercício -->
-          </div>
-
-          <div class="quiz-feedback hidden" id="game2-feedback-box">
-            <div class="feedback-content">
-              <span class="feedback-icon" id="game2-feedback-icon">🎉</span>
-              <p class="feedback-text" id="game2-feedback-text">Muito bem!</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tela de Fim de Jogo 2 -->
-        <div class="game-end-screen hidden" id="game2-end-screen">
-          <div class="trophy-animation">🚀</div>
-          <h2>Código Decifrado! Você é um mestre da sintaxe!</h2>
-          <p>Você aprendeu a conectar as tags HTML aos seletores CSS corretos utilizando os símbolos <code>.</code> e <code>#</code>.</p>
-          <div class="end-actions">
-            <button class="btn-secondary" onclick="restartGame2()"><i class="fa-solid fa-rotate-left"></i> Reiniciar</button>
-            <button class="btn-primary next-tab-btn" data-next="sandbox">Ir para o Laboratório 🧪</button>
-          </div>
+          <div class="swatches">
+            <div class="swatch active" style="background:#1D9E75" data-c="#1D9E75" data-name="verde" onclick="pickColor(this)"></div>
+            <div class="swatch" style="background:#D85A30" data-c="#D85A30" data-name="laranja" onclick="pickColor(this)"></div>
+            <div class="swatch" style="background:#378ADD" data-c="#378ADD" data-name="azul" onclick="pickColor(this)"></div>
+            <div class="swatch" style="background:#BA7517" data-c="#BA7517" data-name="dourado" onclick="pickColor(this)"></div>
+            <div class="swatch" style="background:#993556" data-c="#993556" data-name="rosa" onclick="pickColor(this)"></div>
+            <div class="swatch" style="background:#534AB7" data-c="#534AB7" data-name="roxo" onclick="pickColor(this)"></div>
+          </div></div>
         </div>
       </div>
-    </section>
-
-    <!-- TAB 7: LAB DOS ALIENS -->
-    <section class="tab-panel" id="sandbox">
-      <div class="card">
-        <div class="card-header">
-          <span class="badge badge-sandbox">Laboratório Visual</span>
-          <h2>O Laboratório de Experimentos dos Aliens 🧪</h2>
+      <div class="code-placeholder" id="ph-color" onclick="reveal('color', document.querySelector('[onclick*=color]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:60%"></div>
+          <div class="code-placeholder-line" style="width:90%"></div>
+          <div class="code-placeholder-line" style="width:75%"></div>
+          <div class="code-placeholder-line" style="width:50%"></div>
         </div>
-        
-        <p class="sandbox-instructions" style="padding: 0 2rem;">Bem-vindo ao laboratório! Aqui temos dois aliens comuns (<strong>Bob</strong> e <strong>Mel</strong>) e o <strong>Rei Alien</strong>. Eles possuem classes e IDs diferentes. Clique nos botões de CSS ao lado para aplicar os estilos e veja a mágica acontecer!</p>
-        
-        <div class="sandbox-layout" style="padding: 0 2rem 2rem;">
-          <!-- Painel de Seletores CSS -->
-          <div class="sandbox-controls">
-            <div class="control-group class-controls">
-              <h3><span class="symbol">.</span> classe-alien (Afeta Bob e Mel)</h3>
-              <p class="control-desc">Aplica estilos a todos os elementos da classe <code>classe-alien</code>.</p>
-              
-              <div class="control-buttons">
-                <button class="btn-control" data-target="class" data-style="color-green">
-                  Cor: Verde <span class="preview-dot color-green"></span>
-                </button>
-                <button class="btn-control" data-target="class" data-style="color-orange">
-                  Cor: Laranja <span class="preview-dot color-orange"></span>
-                </button>
-                <button class="btn-control" data-target="class" data-style="jump-anim">
-                  Efeito: Pular 🦘
-                </button>
-                <button class="btn-control" data-target="class" data-style="clear">
-                  Limpar Classe 🧹
-                </button>
-              </div>
-            </div>
-
-            <div class="control-group id-controls">
-              <h3><span class="symbol">#</span> rei-alien (Afeta apenas o Rei)</h3>
-              <p class="control-desc">Aplica estilos exclusivos ao elemento com o ID <code>rei-alien</code>.</p>
-              
-              <div class="control-buttons">
-                <button class="btn-control" data-target="id" data-style="crown-wear">
-                  Colocar Coroa 👑
-                </button>
-                <button class="btn-control" data-target="id" data-style="size-big">
-                  Tamanho Gigante 🦖
-                </button>
-                <button class="btn-control" data-target="id" data-style="spin-anim">
-                  Efeito: Rodopiar 🌀
-                </button>
-                <button class="btn-control" data-target="id" data-style="clear">
-                  Limpar ID 🧹
-                </button>
-              </div>
-            </div>
-
-            <button class="btn-secondary margin-top-sm" id="btn-reset-sandbox">
-              <i class="fa-solid fa-trash-can"></i> Limpar Tudo
-            </button>
-          </div>
-
-          <!-- Palco Visual -->
-          <div class="sandbox-stage">
-            <div class="stage-labels">
-              <span>Pré-visualização do Site</span>
-            </div>
-
-            <div class="aliens-row">
-              <!-- Alien 1 (Class) -->
-              <div class="alien-card" id="alien-bob">
-                <div class="alien-monster-wrapper">
-                  <div class="alien-body body-classic">
-                    <div class="alien-eyes">👁️👁️</div>
-                    <div class="alien-mouth">👄</div>
-                  </div>
-                </div>
-                <div class="alien-name">Mel</div>
-                <div class="alien-code">&lt;div class="classe-alien"&gt;</div>
-              </div>
-
-              <!-- Alien 2 (Class) -->
-              <div class="alien-card" id="alien-mel">
-                <div class="alien-monster-wrapper">
-                  <div class="alien-body body-classic">
-                    <div class="alien-eyes">👁️👁️</div>
-                    <div class="alien-mouth">👅</div>
-                  </div>
-                </div>
-                <div class="alien-name">Bob</div>
-                <div class="alien-code">&lt;div class="classe-alien"&gt;</div>
-              </div>
-
-              <!-- Alien 3 (ID) -->
-              <div class="alien-card" id="alien-king">
-                <div class="alien-crown hidden-crown">👑</div>
-                <div class="alien-monster-wrapper">
-                  <div class="alien-body body-king">
-                    <div class="alien-eyes">👁️</div>
-                    <div class="alien-mouth">🔥</div>
-                  </div>
-                </div>
-                <div class="alien-name">Rei Alien</div>
-                <div class="alien-code">&lt;div id="rei-alien"&gt;</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn-secondary prev-tab-btn" data-prev="game-code"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-          <button class="btn-primary next-tab-btn" data-next="practice">Ir para o Mão na Massa 💻 <i class="fa-solid fa-chevron-right"></i></button>
-        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
       </div>
-    </section>
+      <div class="code-panel" id="code-color">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+          <span class="c-tag">&lt;p</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"meu-texto"</span><span class="c-tag">&gt;</span>
+            Olá, mundo!
+          <span class="c-tag">&lt;/p&gt;</span>
 
-    <!-- TAB 8: MÃO NA MASSA -->
-    <section class="tab-panel" id="practice">
-      <div class="card">
-        <div class="card-header">
-          <span class="badge badge-practice">Atividade</span>
-          <h2>Prática Mão na Massa: Crie o seu Próprio Código! 💻</h2>
-        </div>
-        
-        <div class="practice-container">
-          <p class="practice-intro">Chegou a hora de sair do simulador e escrever código de verdade! Abra o editor de código do seu computador (VS Code) e siga os passos abaixo:</p>
-
-          <div class="step-card">
-            <div class="step-num">1</div>
-            <div class="step-details">
-              <h3>Crie o arquivo HTML</h3>
-              <p>Crie um arquivo chamado <code>index.html</code> no seu computador e copie a estrutura abaixo:</p>
-              <div class="code-editor">
-                <pre><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
-<span class="tag">&lt;html&gt;</span>
-<span class="tag">&lt;head&gt;</span>
-  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"style.css"</span><span class="tag">&gt;</span>
-<span class="tag">&lt;/head&gt;</span>
-<span class="tag">&lt;body&gt;</span>
-  <span class="comment">&lt;!-- Três botões com uniformes (Classe) --&gt;</span>
-  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="string">"botao-comum"</span><span class="tag">&gt;</span>Opção A<span class="tag">&lt;/button&gt;</span>
-  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="string">"botao-comum"</span><span class="tag">&gt;</span>Opção B<span class="tag">&lt;/button&gt;</span>
-  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="string">"botao-comum"</span><span class="tag">&gt;</span>Opção C<span class="tag">&lt;/button&gt;</span>
-
-  <span class="comment">&lt;!-- Um botão super especial com destaque (ID) --&gt;</span>
-  <span class="tag">&lt;button</span> <span class="attr">id</span>=<span class="string">"botao-destaque"</span><span class="tag">&gt;</span>BOTÃO DE OURO 🌟<span class="tag">&lt;/button&gt;</span>
-<span class="tag">&lt;/body&gt;</span>
-<span class="tag">&lt;/html&gt;</span></code></pre>
-              </div>
-            </div>
-          </div>
-
-          <div class="step-card">
-            <div class="step-num">2</div>
-            <div class="step-details">
-              <h3>Crie o arquivo CSS</h3>
-              <p>Agora crie um arquivo chamado <code>style.css</code> na mesma pasta. Vamos criar o estilo do grupo e o estilo exclusivo:</p>
-              <div class="code-editor">
-                <pre><code><span class="comment">/* 1. Mude a cor do uniforme (Class) */</span>
-<span class="selector">.botao-comum</span> {
-  <span class="property">background-color</span>: <span class="value">#3498db</span>;
-  <span class="property">color</span>: <span class="value">white</span>;
-  <span class="property">padding</span>: <span class="value">10px 20px</span>;
-  <span class="property">border</span>: <span class="value">none</span>;
-  <span class="property">border-radius</span>: <span class="value">5px</span>;
-  <span class="property">margin-right</span>: <span class="value">10px</span>;
-}
-
-<span class="comment">/* 2. Mude o botão de ouro (ID) */</span>
-<span class="selector">#botao-destaque</span> {
-  <span class="property">background-color</span>: <span class="value">gold</span>;
-  <span class="property">color</span>: <span class="value">black</span>;
-  <span class="property">padding</span>: <span class="value">15px 30px</span>;
-  <span class="property">border</span>: <span class="value">3px solid orange</span>;
-  <span class="property">font-weight</span>: <span class="value">bold</span>;
-  <span class="property">border-radius</span>: <span class="value">10px</span>;
-}</code></pre>
-              </div>
-            </div>
-          </div>
-
-          <div class="step-card">
-            <div class="step-num">3</div>
-            <div class="step-details">
-              <h3>Desafios Extras (Duração de Aula)</h3>
-              <p>Terminou rápido? Tente fazer estas modificações no seu arquivo <code>style.css</code>:</p>
-              <ul>
-                <li><i class="fa-solid fa-star text-accent"></i> Faça os botões comuns terem uma borda de outra estilo (dashed, dotted, etc)</li>
-                <li><i class="fa-solid fa-star text-accent"></i> Mude a cor de fundo (background-color) do botão de ID para a sua cor favorita.</li>
-                <li><i class="fa-solid fa-star text-accent"></i> Adicione um parágrafo no HTML com o seu nome e dê um <code>id="seu-nome"</code> para colocar uma fonte gigante!</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <button class="btn-secondary prev-tab-btn" data-prev="sandbox"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
-          <button class="btn-success" id="btn-congratulations"><i class="fa-solid fa-flag-checkered"></i> Concluir Missão!</button>
-        </div>
+          <span class="c-comment">/* CSS */</span>
+          <span class="c-prop">.meu-texto</span> <span class="c-punc">{</span>
+            <span class="c-prop">color</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="color-code">#1D9E75</span><span class="c-punc">;</span>
+          <span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → texto em <strong id="color-name">verde</strong></div>
       </div>
-    </section>
-
-  </main>
-
-  <!-- Janela Pop-up de Parabéns -->
-  <div class="modal-overlay hidden" id="congrats-modal">
-    <div class="modal-card">
-      <div class="modal-trophy">🏆</div>
-      <h2>Parabéns, Programador(a) Estelar! 🚀</h2>
-      <p>Você completou todos os desafios de ID e CLASS com sucesso. Agora você tem o conhecimento necessário para organizar e estilizar seus sites como um profissional!</p>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-val" id="modal-score">10/10</span>
-          <span class="stat-lbl">Desafio 1</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-val">5/5</span>
-          <span class="stat-lbl">Desafio 2</span>
-        </div>
-      </div>
-      <button class="btn-primary" onclick="closeModal()">Finalizar <i class="fa-solid fa-circle-check"></i></button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- ===== BACKGROUND-COLOR ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Coloração</span>
+      <span class="prop-desc" id="desc-bg">Muda a cor de fundo de um elemento.</span>
+      <button class="reveal-btn" onclick="reveal('bg', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <div id="bg-box" class="demo-box" style="width:100px;height:60px;border-radius:8px;background:#5DCAA5;"></div>
+        </div>
+        <div class="controls">
+          <div>
+          <div class="swatches">
+            <div class="swatch active" style="background:#5DCAA5" data-c="#5DCAA5" data-name="teal" onclick="pickBg(this)"></div>
+            <div class="swatch" style="background:#F0997B" data-c="#F0997B" data-name="salmão" onclick="pickBg(this)"></div>
+            <div class="swatch" style="background:#85B7EB" data-c="#85B7EB" data-name="azul claro" onclick="pickBg(this)"></div>
+            <div class="swatch" style="background:#FAC775" data-c="#FAC775" data-name="âmbar" onclick="pickBg(this)"></div>
+            <div class="swatch" style="background:#ED93B1" data-c="#ED93B1" data-name="rosa" onclick="pickBg(this)"></div>
+            <div class="swatch" style="background:#AFA9EC" data-c="#AFA9EC" data-name="lavanda" onclick="pickBg(this)"></div>
+          </div></div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-bg" onclick="reveal('bg', document.querySelector('[onclick*=bg]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:55%"></div>
+          <div class="code-placeholder-line" style="width:85%"></div>
+          <div class="code-placeholder-line" style="width:70%"></div>
+          <div class="code-placeholder-line" style="width:45%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-bg">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">background-color</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="bg-code">#5DCAA5</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → fundo <strong id="bg-name">teal</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FONT-SIZE ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Fonte do texto</span>
+      <span class="prop-desc" id="desc-fs">Controla o tamanho das letras.</span>
+      <button class="reveal-btn" onclick="reveal('fs', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <span id="fs-text" class="demo-text-el" style="font-size:20px;color:#534AB7;">Texto</span>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <input type="range" min="10" max="52" value="20" oninput="setFs(this.value)">
+            <span class="val-badge" id="fs-val">20px</span>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-fs" onclick="reveal('fs', document.querySelector('[onclick*=fs]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:65%"></div>
+          <div class="code-placeholder-line" style="width:80%"></div>
+          <div class="code-placeholder-line" style="width:60%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-fs">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;p</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"titulo"</span><span class="c-tag">&gt;</span>Texto<span class="c-tag">&lt;/p&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.titulo</span> <span class="c-punc">{</span>
+  <span class="c-prop">font-size</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="fs-code">20px</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → letras com <strong id="fs-res">20px</strong> de altura</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FONT-WEIGHT ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Fonte do texto</span>
+      <span class="prop-desc" id="desc-fw">Controla a espessura do texto — de fino a negrito.</span>
+      <button class="reveal-btn" onclick="reveal('fw', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <span id="fw-text" class="demo-text-el" style="font-size:26px;font-weight:100;color:#D85A30;">Palavra</span>
+        </div>
+        <div class="controls">
+          <div class="panel-label" style="margin-bottom:6px;">Escolha o peso</div>
+          <div class="btn-group">
+            <button class="btn-opt active" onclick="setFw(100,'100 — fino',this)">100</button>
+            <button class="btn-opt" onclick="setFw(300,'300 — leve',this)">300</button>
+            <button class="btn-opt" onclick="setFw(400,'400 — normal',this)">400</button>
+            <button class="btn-opt" onclick="setFw(700,'700 — negrito',this)">700</button>
+            <button class="btn-opt" onclick="setFw(900,'900 — extranegrito',this)">900</button>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-fw" onclick="reveal('fw', document.querySelector('[onclick*=fw]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:60%"></div>
+          <div class="code-placeholder-line" style="width:88%"></div>
+          <div class="code-placeholder-line" style="width:50%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-fw">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;p</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"texto"</span><span class="c-tag">&gt;</span>Palavra<span class="c-tag">&lt;/p&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.texto</span> <span class="c-punc">{</span>
+  <span class="c-prop">font-weight</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="fw-code">100</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → <strong id="fw-res">100 — fino</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TEXT-ALIGN ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Alinhamento</span>
+      <span class="prop-desc" id="desc-ta">Alinha o texto horizontalmente dentro do elemento.</span>
+      <button class="reveal-btn" onclick="reveal('ta', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage" style="display:block; padding:16px; min-height:100px;">
+          <div style="background:white;border:1px solid #e2e0d8;border-radius:6px;padding:12px 16px;width:100%;">
+            <p id="ta-text" style="text-align:left;transition:all 0.3s;color:#1a1917;font-size:15px;line-height:1.6;">CSS é incrível!</p>
+          </div>
+        </div>
+        <div class="controls">
+          <div class="panel-label" style="margin-bottom:6px;">Escolha o alinhamento</div>
+          <div class="btn-group">
+            <button class="btn-opt active" onclick="setAlign('left','esquerda',this)">esquerda</button>
+            <button class="btn-opt" onclick="setAlign('center','centralizado',this)">centro</button>
+            <button class="btn-opt" onclick="setAlign('right','direita',this)">direita</button>
+            <button class="btn-opt" onclick="setAlign('justify','justificado',this)">justificado</button>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-ta" onclick="reveal('ta', document.querySelector('[onclick*=ta]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:70%"></div>
+          <div class="code-placeholder-line" style="width:90%"></div>
+          <div class="code-placeholder-line" style="width:55%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-ta">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;p</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"paragrafo"</span><span class="c-tag">&gt;</span>
+  CSS é incrível!
+<span class="c-tag">&lt;/p&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.paragrafo</span> <span class="c-punc">{</span>
+  <span class="c-prop">text-align</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="ta-code">left</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → texto <strong id="ta-res">à esquerda</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BORDER-RADIUS ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Bordas</span>
+      <span class="prop-desc" id="desc-br">Arredonda os cantos de um elemento — de quadrado a círculo.</span>
+      <button class="reveal-btn" onclick="reveal('br', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <div id="br-box" class="demo-box" style="width:80px;height:80px;background:#AFA9EC;border-radius:0px;"></div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <input type="range" min="0" max="50" value="0" oninput="setBr(this.value)">
+            <span class="val-badge" id="br-val">0px</span>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-br" onclick="reveal('br', document.querySelector('[onclick*=br]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:65%"></div>
+          <div class="code-placeholder-line" style="width:80%"></div>
+          <div class="code-placeholder-line" style="width:50%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-br">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">border-radius</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="br-code">0px</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → <strong id="br-res">sem arredondamento</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BORDER ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Bordas</span>
+      <span class="prop-desc" id="desc-bd">Adiciona uma moldura ao redor do elemento.</span>
+      <button class="reveal-btn" onclick="reveal('bd', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <div id="bd-box" class="demo-box" style="width:80px;height:80px;border-radius:8px;background:#f5f4f0;border:3px solid #534AB7;"></div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <div class="panel-label" style="margin-bottom:6px;">espessura</div>
+            <input type="range" min="1" max="14" value="3" oninput="setBd(this.value)">
+            <span class="val-badge" id="bd-val">3px</span>
+          </div>
+          <div>
+            <div class="panel-label" style="margin-bottom:6px;">Cor da borda</div>
+            <div class="swatches">
+              <div class="swatch active" style="background:#534AB7" data-c="#534AB7" onclick="setBdColor(this)"></div>
+              <div class="swatch" style="background:#D85A30" data-c="#D85A30" onclick="setBdColor(this)"></div>
+              <div class="swatch" style="background:#0F6E56" data-c="#0F6E56" onclick="setBdColor(this)"></div>
+              <div class="swatch" style="background:#993C1D" data-c="#993C1D" onclick="setBdColor(this)"></div>
+              <div class="swatch" style="background:#1a1917" data-c="#1a1917" onclick="setBdColor(this)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="panel-label" style="margin-bottom:6px;">Estilo da borda</div>
+            <div class="btn-group">
+              <button class="btn-opt active" onclick="setBdStyle('solid',this)">solid</button>
+              <button class="btn-opt" onclick="setBdStyle('dashed',this)">dashed</button>
+              <button class="btn-opt" onclick="setBdStyle('dotted',this)">dotted</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-bd" onclick="reveal('bd', document.querySelector('[onclick*=bd]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:75%"></div>
+          <div class="code-placeholder-line" style="width:90%"></div>
+          <div class="code-placeholder-line" style="width:60%"></div>
+          <div class="code-placeholder-line" style="width:40%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-bd">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS — atalho: */</span>
+<span class="c-comment">/* espessura | estilo | cor */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">border</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="bd-code">3px solid #534AB7</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → borda <strong id="bd-res">3px sólida</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== WIDTH / HEIGHT ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Tamanhos</span>
+      <span class="prop-desc" id="desc-wh">Define a largura e a altura de um elemento.</span>
+      <button class="reveal-btn" onclick="reveal('wh', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage" style="overflow:hidden;min-height:120px;">
+          <div id="wh-box" class="demo-box" style="width:80px;height:50px;background:#F0997B;border-radius:6px;font-size:11px;color:#4A1B0C;"></div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <div class="panel-label" style="margin-bottom:6px;">largura (width)</div>
+            <input type="range" min="20" max="170" value="80" oninput="setW(this.value)">
+            <span class="val-badge" id="w-val">80px</span>
+          </div>
+          <div class="ctrl-row">
+            <div class="panel-label" style="margin-bottom:6px;">altura (height)</div>
+            <input type="range" min="20" max="110" value="50" oninput="setH(this.value)">
+            <span class="val-badge" id="h-val">50px</span>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-wh" onclick="reveal('wh', document.querySelector('[onclick*=wh]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:60%"></div>
+          <div class="code-placeholder-line" style="width:85%"></div>
+          <div class="code-placeholder-line" style="width:85%"></div>
+          <div class="code-placeholder-line" style="width:45%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-wh">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">width</span><span class="c-punc">:</span>  <span class="c-val-dynamic" id="w-code">80px</span><span class="c-punc">;</span>
+  <span class="c-prop">height</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="h-code">50px</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → <strong id="wh-res">80 × 50 px</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PADDING ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Espaçamento</span>
+      <span class="prop-desc" id="desc-pad">Espaço interno entre o conteúdo e a borda do elemento.</span>
+      <button class="reveal-btn" onclick="reveal('pad', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage" style="overflow:hidden;">
+          <div id="pad-outer" style="background:#FAC775;border-radius:8px;padding:4px;display:inline-flex;transition:all 0.3s;">
+            <div style="background:#0F6E56;border-radius:4px;width:44px;height:44px;"></div>
+          </div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <input type="range" min="0" max="36" value="4" oninput="setPad(this.value)">
+            <span class="val-badge" id="pad-val">4px</span>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--text3);line-height:1.5;">Considere a área <span style="background:#FAC775;padding:1px 6px;border-radius:3px;font-size:11px;color:#633806;">amarela</span> — o espaço que o elemento respira por dentro.</p>
+      </div>
+      <div class="code-placeholder" id="ph-pad" onclick="reveal('pad', document.querySelector('[onclick*=pad]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:65%"></div>
+          <div class="code-placeholder-line" style="width:80%"></div>
+          <div class="code-placeholder-line" style="width:55%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-pad">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;</span>
+  Conteúdo
+<span class="c-tag">&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">padding</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="pad-code">4px</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → <strong id="pad-res">4px</strong> de espaço interno</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MARGIN ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Espaçamento</span>
+      <span class="prop-desc" id="desc-margin">Espaço externo ao redor do elemento — distância para os vizinhos.</span>
+      <button class="reveal-btn" onclick="reveal('margin', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage" style="overflow:hidden;flex-direction:column;gap:0;padding:8px;align-items:center;justify-content:center;">
+          <div style="background:#e2e0d8;border:1px dashed #9e9d97;border-radius:4px;padding:4px 8px;font-size:11px;color:#6b6a65;">elemento de cima</div>
+          <div id="margin-spacer" style="height:8px;transition:height 0.3s;"></div>
+          <div id="margin-box" style="background:#85B7EB;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;color:#042C53;">minha caixa</div>
+          <div id="margin-spacer2" style="height:8px;transition:height 0.3s;"></div>
+          <div style="background:#e2e0d8;border:1px dashed #9e9d97;border-radius:4px;padding:4px 8px;font-size:11px;color:#6b6a65;">elemento de baixo</div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <div class="panel-label" style="margin-bottom:6px;">Superior</div>
+            <input type="range" min="0" max="40" value="8" oninput="setMargin('top',this.value)">
+            <span class="val-badge" id="mt-val">8px</span>
+          </div>
+          <div class="ctrl-row">
+            <div class="panel-label" style="margin-bottom:6px;">Inferior</div>
+            <input type="range" min="0" max="40" value="8" oninput="setMargin('bottom',this.value)">
+            <span class="val-badge" id="mb-val">8px</span>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--text3);line-height:1.5;">Considere o espaço entre a caixa <span style="background:#dbeafe;padding:1px 6px;border-radius:3px;font-size:11px;color:#042C53;">azul</span> e os vizinhos.</p>
+      </div>
+      <div class="code-placeholder" id="ph-margin" onclick="reveal('margin', document.querySelector('[onclick*=margin]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:70%"></div>
+          <div class="code-placeholder-line" style="width:90%"></div>
+          <div class="code-placeholder-line" style="width:90%"></div>
+          <div class="code-placeholder-line" style="width:50%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-margin">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;</span>
+  minha caixa
+<span class="c-tag">&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">margin-top</span><span class="c-punc">:</span>    <span class="c-val-dynamic" id="mt-code">8px</span><span class="c-punc">;</span>
+  <span class="c-prop">margin-bottom</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="mb-code">8px</span><span class="c-punc">;</span>
+<span class="c-punc">}</span>
+
+<span class="c-comment">/* ou, abreviado: */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">margin</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="m-abbr">8px 0</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → <strong id="margin-res">8px acima e abaixo</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== OPACITY ===== -->
+  <div class="card">
+    <div class="card-header">
+      <span class="prop-tag">Visibilidade</span>
+      <span class="prop-desc" id="desc-op">Controla a transparência do elemento — de invisível a totalmente visível.</span>
+      <button class="reveal-btn" onclick="reveal('op', this)">
+        <span class="btn-icon">✦</span> Ver resposta
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="demo-panel">
+        <div class="demo-stage">
+          <div id="op-box" class="demo-box" style="width:80px;height:80px;background:#378ADD;border-radius:8px;opacity:1;font-size:12px;font-weight:600;color:#042C53;">100%</div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-row">
+            <div class="panel-label" style="margin-bottom:6px;">transparência</div>
+            <input type="range" min="0" max="100" value="100" oninput="setOp(this.value)">
+            <span class="val-badge" id="op-val">100%</span>
+          </div>
+        </div>
+      </div>
+      <div class="code-placeholder" id="ph-op" onclick="reveal('op', document.querySelector('[onclick*=op]'))">
+        <div class="code-placeholder-icon">💻</div>
+        <div class="code-placeholder-lines">
+          <div class="code-placeholder-line" style="width:60%"></div>
+          <div class="code-placeholder-line" style="width:78%"></div>
+          <div class="code-placeholder-line" style="width:50%"></div>
+        </div>
+        <div class="code-placeholder-hint">clique para revelar o código</div>
+      </div>
+      <div class="code-panel" id="code-op">
+        <div class="code-panel-label">📄 Código</div>
+        <pre class="code-block"><span class="c-comment">/* HTML */</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span><span class="c-punc">=</span><span class="c-str">"caixa"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+
+<span class="c-comment">/* CSS */</span>
+<span class="c-comment">/* 0 = invisível, 1 = visível */</span>
+<span class="c-prop">.caixa</span> <span class="c-punc">{</span>
+  <span class="c-prop">opacity</span><span class="c-punc">:</span> <span class="c-val-dynamic" id="op-code">1</span><span class="c-punc">;</span>
+<span class="c-punc">}</span></pre>
+        <div class="result-tag">resultado → <strong id="op-res">totalmente visível</strong></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Aula interativa de CSS para iniciantes &nbsp;·&nbsp; Todas as propriedades são padrão CSS3</p>
+</footer>
+
+<script>
+  /* ===== REVEAL LOGIC ===== */
+  function reveal(id, btn) {
+    const desc = document.getElementById('desc-' + id);
+    const code = document.getElementById('code-' + id);
+    const ph   = document.getElementById('ph-' + id);
+    if (desc) desc.classList.add('revealed');
+    if (code) code.classList.add('revealed');
+    if (ph)   ph.classList.add('hidden');
+    /* update the button */
+    const allBtns = document.querySelectorAll('.reveal-btn');
+    allBtns.forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) {
+        b.classList.add('done');
+        b.innerHTML = '<span class="btn-icon">✓</span> Revelado';
+        b.disabled = true;
+      }
+    });
+  }
+
+  /* ===== PROPERTY CONTROLS ===== */
+
+  function pickColor(el) {
+    document.getElementById('color-text').style.color = el.dataset.c;
+    document.getElementById('color-code').textContent = el.dataset.c;
+    document.getElementById('color-name').textContent = el.dataset.name;
+    el.closest('.swatches').querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function pickBg(el) {
+    document.getElementById('bg-box').style.background = el.dataset.c;
+    document.getElementById('bg-code').textContent = el.dataset.c;
+    document.getElementById('bg-name').textContent = el.dataset.name;
+    el.closest('.swatches').querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function setFs(v) {
+    document.getElementById('fs-text').style.fontSize = v + 'px';
+    document.getElementById('fs-val').textContent = v + 'px';
+    document.getElementById('fs-code').textContent = v + 'px';
+    document.getElementById('fs-res').textContent = v + 'px';
+  }
+
+  function setFw(v, label, btn) {
+    document.getElementById('fw-text').style.fontWeight = v;
+    document.getElementById('fw-code').textContent = v;
+    document.getElementById('fw-res').textContent = label;
+    btn.closest('.btn-group').querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function setAlign(v, label, btn) {
+    document.getElementById('ta-text').style.textAlign = v;
+    document.getElementById('ta-code').textContent = v;
+    document.getElementById('ta-res').textContent = label;
+    btn.closest('.btn-group').querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function setBr(v) {
+    const px = parseInt(v);
+    document.getElementById('br-box').style.borderRadius = px + 'px';
+    document.getElementById('br-val').textContent = px + 'px';
+    document.getElementById('br-code').textContent = px + 'px';
+    const label = px === 0 ? 'sem arredondamento' : px >= 50 ? 'círculo perfeito' : px + 'px de arredondamento';
+    document.getElementById('br-res').textContent = label;
+  }
+
+  let _bdSize = 3, _bdColor = '#534AB7', _bdStyle = 'solid';
+  function updateBd() {
+    const v = _bdSize + 'px ' + _bdStyle + ' ' + _bdColor;
+    document.getElementById('bd-box').style.border = v;
+    document.getElementById('bd-code').textContent = v;
+    document.getElementById('bd-val').textContent = _bdSize + 'px';
+    document.getElementById('bd-res').textContent = _bdSize + 'px ' + _bdStyle;
+  }
+  function setBd(v) { _bdSize = v; updateBd(); }
+  function setBdColor(el) {
+    _bdColor = el.dataset.c;
+    el.closest('.swatches').querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    updateBd();
+  }
+  function setBdStyle(v, btn) {
+    _bdStyle = v;
+    btn.closest('.btn-group').querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    updateBd();
+  }
+
+  function setW(v) {
+    document.getElementById('wh-box').style.width = v + 'px';
+    document.getElementById('w-val').textContent = v + 'px';
+    document.getElementById('w-code').textContent = v + 'px';
+    const h = document.getElementById('h-val').textContent;
+    document.getElementById('wh-res').textContent = v + ' × ' + h.replace('px','') + ' px';
+  }
+  function setH(v) {
+    document.getElementById('wh-box').style.height = v + 'px';
+    document.getElementById('h-val').textContent = v + 'px';
+    document.getElementById('h-code').textContent = v + 'px';
+    const w = document.getElementById('w-val').textContent;
+    document.getElementById('wh-res').textContent = w.replace('px','') + ' × ' + v + ' px';
+  }
+
+  function setPad(v) {
+    document.getElementById('pad-outer').style.padding = v + 'px';
+    document.getElementById('pad-val').textContent = v + 'px';
+    document.getElementById('pad-code').textContent = v + 'px';
+    document.getElementById('pad-res').textContent = v + 'px';
+  }
+
+  let _mt = 8, _mb = 8;
+  function setMargin(side, v) {
+    if (side === 'top') {
+      _mt = parseInt(v);
+      document.getElementById('margin-spacer').style.height = v + 'px';
+      document.getElementById('mt-val').textContent = v + 'px';
+      document.getElementById('mt-code').textContent = v + 'px';
+    } else {
+      _mb = parseInt(v);
+      document.getElementById('margin-spacer2').style.height = v + 'px';
+      document.getElementById('mb-val').textContent = v + 'px';
+      document.getElementById('mb-code').textContent = v + 'px';
+    }
+    document.getElementById('m-abbr').textContent = _mt + 'px ' + (_mt === _mb ? '(todos lados)' : '/ ' + _mb + 'px');
+    document.getElementById('margin-res').textContent = _mt + 'px acima, ' + _mb + 'px abaixo';
+  }
+
+  function setOp(v) {
+    const frac = (v / 100).toFixed(2);
+    document.getElementById('op-box').style.opacity = frac;
+    document.getElementById('op-box').textContent = v + '%';
+    document.getElementById('op-val').textContent = v + '%';
+    document.getElementById('op-code').textContent = frac;
+    const label = v == 0 ? 'invisível' : v == 100 ? 'totalmente visível' : v + '% de opacidade';
+    document.getElementById('op-res').textContent = label;
+  }
+</script>
+
 </body>
 </html>
