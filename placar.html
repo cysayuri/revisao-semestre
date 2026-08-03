@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placar — Aula de revisão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="placar.css">
+</head>
+<body>
+  <div class="app-root">
+    <div class="titlebar">
+      <span class="tb-dot" style="background:#ff5f57"></span>
+      <span class="tb-dot" style="background:#febc2e"></span>
+      <span class="tb-dot" style="background:#28c840"></span>
+      <span class="tb-title">placar.json — times da turma</span>
+      <a class="tb-back" href="index.html">&larr; voltar para a aula</a>
+    </div>
+
+    <div class="content-pane">
+      <h2 class="phase-title">Placar dos times</h2>
+
+      <div class="add-team-row">
+        <input id="new-team-input" class="add-team-input" type="text" placeholder="Nome do novo time (ex: Time &lt;Grid&gt;)">
+        <button id="add-team-btn" class="btn-outline">+ Adicionar time</button>
+      </div>
+
+      <div class="scoreboard-full" id="scoreboard-list"></div>
+
+      <div class="board-actions">
+        <button id="reset-scores-btn" class="btn-ghost">Zerar pontuações</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="placar.js"></script>
+</body>
+</html>
