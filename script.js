@@ -1,596 +1,673 @@
-/* =========================================================
-   ICONES (SVG inline, estilo feather/outline)
-========================================================= */
-const ICON_PATHS = {
-  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
-  play: '<polygon points="5 3 19 12 5 21 5 3"/>',
-  pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
-  rotate: '<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',
-  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-  chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
-  chevronRight: '<polyline points="9 18 15 12 9 6"/>',
-  eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
-  eyeOff: '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 8 11 8a21.7 21.7 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>',
-};
-function icon(name, size = 16) {
-  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name] || ""}</svg>`;
+// ==========================================================================
+// EFEITOS SONOROS SINTETIZADOS (Web Audio API)
+// ==========================================================================
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
 }
 
-/* =========================================================
-   SYNTAX HIGHLIGHT (feito à mão para o conteúdo fixo da aula)
-========================================================= */
-function esc(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-function highlightHTML(src) {
-  let s = esc(src);
-  // s = s.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="tk-comment">$1</span>');
-  // s = s.replace(/(&lt;!DOCTYPE[^&]*&gt;)/gi, '<span class="tk-comment">$1</span>');
-  // s = s.replace(/(&lt;\/?[a-zA-Z0-9-]+)/g, '<span class="tk-tag">$1</span>');
-  // s = s.replace(/(&gt;)/g, '<span class="tk-punct">$1</span>');
-  // s = s.replace(/([a-zA-Z-]+)(=)("[^"]*")/g, '<span class="tk-attr">$1</span>$2<span class="tk-str">$3</span>');
-  return s;
-}
-function highlightCSS(src) {
-  let s = esc(src);
-  // s = s.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="tk-comment">$1</span>');
-  // s = s.replace(/([.#]?[a-zA-Z0-9_-]+(?:::?[a-zA-Z-]+(?:\([^)]*\))?)*)(\s*\{)/g, '<span class="tk-tag">$1</span>$2');
-  // s = s.replace(/([a-zA-Z-]+)(\s*:\s*)([^;]+)(;)/g, '<span class="tk-attr">$1</span>$2<span class="tk-str">$3</span>$4');
-  return s;
-}
-function codeBlock(code, lang = "html", label = "") {
-  const html = lang === "css" ? highlightCSS(code) : highlightHTML(code);
-  const lines = html.split("\n");
-  const rows = lines.map((l, i) =>
-    `<div class="code-line"><span class="code-ln">${i + 1}</span><span class="code-content">${l || " "}</span></div>`
-  ).join("");
-  const labelHtml = label ? `<div class="code-label">${label}</div>` : "";
-  return `${labelHtml}<pre class="code-pre">${rows}</pre>`;
-}
-function commentLine(text) {
-  return `<div class="prompt-comment">// ${text}</div>`;
-}
+function playSound(type) {
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
 
-/* =========================================================
-   CONTEUDO ESTATICO (snippets)
-========================================================= */
-const introBuggy = `<html lang="pt-br">
-<head>
-  <title>Minha Página</title>
-</head>
-<body>
-  <h1>Bem-vindo ao meu site</h1>
-  <p>Esse é o parágrafo principal.
-  <img src="foto.jpg">
-</body>
-</html>`;
+    const now = ctx.currentTime;
 
-const introFixed = `<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <title>Minha Página</title>
-</head>
-<body>
-  <h1>Bem-vindo ao meu site</h1>
-  <p>Esse é o parágrafo principal.</p>
-  <img src="foto.jpg" alt="Descrição da foto">
-</body>
-</html>`;
-
-const divsReveal = `<div class="card">
-  <div class="card-img">
-    <img src="tenis.jpg" alt="Tênis branco">
-  </div>
-  <div class="card-info">
-    <div class="card-title">Tênis Runner</div>
-    <div class="card-price">R$ 299,90</div>
-    <div class="card-button">Comprar</div>
-  </div>
-</div>`;
-
-const idClassBuggyHTML = `<div id="produto">Tênis</div>
-<div id="produto">Camisa</div>`;
-const idClassBuggyCSS = `#produto {
-  color: red;
-}`;
-const idClassFixedHTML = `<div class="produto">Tênis</div>
-<div class="produto">Camisa</div>`;
-const idClassFixedCSS = `.produto {
-  color: red;
-}`;
-
-const semanticBuggy = `<div class="topo">Logo e menu</div>
-<div class="menu">Início | Sobre | Contato</div>
-<div class="conteudo">Título do post + texto</div>
-<div class="rodape">Cyntia Sayuri © FIAP 2026</div>`;
-
-const semanticFixed = `<header class="topo">Logo e menu</header>
-<nav class="menu">Início | Sobre | Contato</nav>
-<main class="conteudo">Título do post + texto</main>
-<footer class="rodape">Cyntia Sayuri © FIAP 2026</footer>`;
-
-const battleSolution = `.btn {
-  border-radius: 100%;
-  background: #29263f;
-  padding: 17px 35px;
-  transition: transform .3s ease, background .3s ease;
-}
-
-.btn:hover {
-  transform: scale(1.08);
-  background: #ff5d8f;
-}`;
-
-const warmupQuestions = [
-  { q: "O que significa a sigla HTML? E CSS?", hint: "Pegadinha, sem dica! Vai outra pergunta: São consideradas linguagens de...?" },
-  { q: "O que uma &lt;div&gt; faz sozinha, sem nenhum CSS aplicado?", hint: "Nada de especial visualmente." },
-  { q: "Qual a diferença entre id e class?", hint: "Elemento único VS Repetir em vários elementos." },
-  { q: "Qual a diferença entre uma tag 'de bloco' e uma 'em linha'?", hint: "Exemplos: &lt;div&gt, &lt;p&gt VS &lt;span&gt, &lt;img&gt" },
-  { q: "Cite e explique um pseudo-elemento ou pseudo-classe que vocês lembram do semestre passado.", hint: "Qualquer resposta vale: :hover, :first-child, :last-child, :nth-child()..." },
-  { q: "Qual propriedade CSS usamos para alinhar itens lado a lado, numa linha ou coluna?", hint: "É um tipo de display." },
-  { q: "Qual a diferença entre transition e animation?", hint: "Transition reage a uma mudança de estado (por exemplo :hover); animation roda sozinha, com @keyframes definindo os passos." },
-  { q: "Por que usar tags semânticas em vez de só div?", hint: "Exemplo de diferença entre &lt;strong&gt e &lt;b&gt." },
-  { q: "Posso usar duas classes diferentes no mesmo elemento? E dois id's?", hint: "Por exemplo: .btn .btn-destaque" },
-  { q: "Qual propriedade eu uso para quebrar uma linha dentro de um container flex?", hint: "Também é um nome de um tipo de lanche." },
-  { q: "Pra que serve o ::placeholder?", hint: "Está presente nos formulários." },
-  { q: "Qual foi a parte mais difícil do semestre passado pra vocês?", hint: "Não vale pontos" },
-];
-
-const topics = [
-  {
-    ext: "html", title: "Intro a HTML & CSS", time: "4 min",
-    prompt: "Esse código tem 3 probleminhas clássicos de início de curso: um lá no topo do documento, e dois dentro do body. Quais vocês conseguem achar antes de eu revelar?",
-    challenge: () => codeBlock(introBuggy, "html", "index.html"),
-    reveal: () => codeBlock(introFixed, "html", "index.html — corrigido"),
-  },
-  {
-    ext: "html", title: "Divs", time: "4 min",
-    prompt: "Um card de produto: imagem, nome, preço e botão de comprar, tudo dentro de um container. Sem usar semântica ainda — só com divs, como vocês organizariam isso?",
-    challenge: () => `<p class="prose">Discutam com seus grupos e montem a estrutura: quantas divs seriam usadas e como elas se aninham? Depois, comparem com a estrutura abaixo.</p>`,
-    reveal: () => codeBlock(divsReveal, "html", "index.html"),
-  },
-  {
-    ext: "css", title: "id e class", time: "4 min",
-    prompt: "Esse HTML repete o mesmo id em dois elementos diferentes. O que está errado, e como resolvemos isso com o que aprendemos sobre id e class?",
-    challenge: () => codeBlock(idClassBuggyHTML, "html", "index.html") + codeBlock(idClassBuggyCSS, "css", "style.css"),
-    reveal: () => `<p class="prose">id precisa ser único na página — repetir o mesmo id é inválido. O correto é usar class:</p>` +
-      codeBlock(idClassFixedHTML, "html", "index.html — corrigido") + codeBlock(idClassFixedCSS, "css", "style.css — corrigido"),
-  },
-  {
-    ext: "css", title: "Flexbox", time: "5 min",
-    prompt: "Brinquem com os controles abaixo. Antes de clicar em cada opção, tentem prever o que vai acontecer.",
-    challenge: () => flexDemoHTML(),
-    reveal: null,
-  },
-  {
-    ext: "css", title: "Pseudo-classes e Pseudo-elementos", time: "5 min",
-    prompt: "Interajam com a lista abaixo — passem o mouse, cliquem no botão.",
-    challenge: () => pseudoDemoHTML(),
-    reveal: null,
-  },
-  {
-    ext: "css", title: "Transições e animações", time: "5 min",
-    prompt: "Ajustem a duração da transição e liguem/desliguem a animação em @keyframes. Reparem na diferença entre os dois conceitos.",
-    challenge: () => transitionDemoHTML(),
-    reveal: null,
-  },
-  {
-    ext: "html", title: "Semântica", time: "4 min",
-    prompt: "Esse HTML só usa div. Qual tag semântica encaixa em cada uma delas?",
-    challenge: () => codeBlock(semanticBuggy, "html", "index.html"),
-    reveal: () => codeBlock(semanticFixed, "html", "index.html — corrigido"),
-  },
-];
-
-const TABS = [
-  { id: "abertura", label: "abertura.html", ext: "html" },
-  { id: "revisao", label: "revisao.css", ext: "css" },
-  { id: "pratica", label: "pratica.js", ext: "js" },
-  { id: "battle", label: "battle.css", ext: "css" },
-];
-
-/* =========================================================
-   ESTADO
-========================================================= */
-const state = {
-  activeTab: "abertura",
-  warmup: { index: 0, revealed: false },
-  revisao: { index: 0, revealed: false },
-  flex: { justify: "flex-start", align: "center", direction: "row" },
-  transition: { duration: 0.3, spinning: true },
-  battle: { showSolution: false },
-  timer: { seconds: 180, initial: 180, running: false, open: false, intervalId: null },
-};
-
-/* =========================================================
-   DEMOS (retornam HTML como string, usando o state atual)
-========================================================= */
-function flexDemoHTML() {
-  const justifyOpts = ["flex-start", "center", "flex-end", "space-between", "space-around"];
-  const alignOpts = ["flex-start", "center", "flex-end"];
-  const { justify, align, direction } = state.flex;
-  return `
-    <div class="demo-box">
-      <div class="control-group">
-        <span class="control-label">justify-content</span>
-        <div class="control-btns">
-          ${justifyOpts.map(o => `<button class="chip ${justify === o ? "chip-active" : ""}" data-action="flex-justify" data-value="${o}">${o}</button>`).join("")}
-        </div>
-      </div>
-      <div class="control-group">
-        <span class="control-label">align-items</span>
-        <div class="control-btns">
-          ${alignOpts.map(o => `<button class="chip ${align === o ? "chip-active" : ""}" data-action="flex-align" data-value="${o}">${o}</button>`).join("")}
-        </div>
-      </div>
-      <button class="chip" data-action="flex-direction-toggle">flex-direction: ${direction}</button>
-      <div class="flex-stage" style="justify-content:${justify}; align-items:${align}; flex-direction:${direction}">
-        <div class="flex-box fb-1">1</div>
-        <div class="flex-box fb-2" style="${align === "stretch" ? "height:auto" : ""}">2</div>
-        <div class="flex-box fb-3">3</div>
-      </div>
-    </div>`;
-}
-
-function pseudoDemoHTML() {
-  const items = ["Início", "Sobre", "Serviços", "Portfólio", "Contato"];
-  return `
-    <div class="demo-box">
-      <p class="demo-hint">Passe o mouse pelos itens da lista e clique no botão para focar (Tab também funciona).</p>
-      <ul class="pseudo-list">
-        ${items.map(it => `<li>${it}</li>`).join("")}
-      </ul>
-      <button class="pseudo-btn">Clique aqui pra ver o :focus</button>
-    </div>`;
-}
-      // <div class="pseudo-legend">
-      //   <span><i class="dot" style="background:var(--pink)"></i>:first-child</span>
-      //   <span><i class="dot" style="background:var(--green)"></i>:last-child</span>
-      //   <span><i class="dot" style="background:var(--purple)"></i>:nth-child(3)</span>
-      //   <span><i class="dot" style="background:var(--blue)"></i>:hover / :focus</span>
-      //   <span><i class="dot" style="background:var(--yellow)"></i>::first-letter</span>
-      //   <span><i class="dot" style="background:var(--red)"></i>::selection</span>
-      // </div>
-
-function transitionDemoHTML() {
-  const { duration, spinning } = state.transition;
-  return `
-    <div class="demo-box">
-      <div class="control-group">
-        <span class="control-label" id="transition-duration-label">transition-duration: ${duration.toFixed(1)}s</span>
-        <input type="range" min="0.1" max="2" step="0.1" value="${duration}" class="range-input" data-input="transition-duration">
-      </div>
-      <div class="transition-stage">
-        <button class="transition-btn" id="transition-target-btn" style="transition-duration:${duration}s">Passe o mouse aqui</button>
-      </div>
-      <div class="control-group" style="margin-top:20px">
-        <button class="chip" data-action="transition-toggle-spin">${spinning ? "Pausar animação (@keyframes)" : "Rodar animação (@keyframes)"}</button>
-      </div>
-      <div class="keyframe-stage">
-        <div class="spin-box" style="animation-play-state:${spinning ? "running" : "paused"}"></div>
-      </div>
-    </div>`;
-}
-
-function targetCardHTML() {
-  return `
-    <article class="target-card">
-      <div class="target-card-avatar">🧑‍💻</div>
-      <h3>Ana Beatriz</h3>
-      <p class="target-card-role">Desenvolvedora Front-end</p>
-      <p class="target-card-bio">Apaixonada por criar interfaces bonitas e acessíveis.</p>
-      <button class="target-card-btn">Seguir</button>
-    </article>`;
-}
-
-function battleTargetHTML() {
-  return `<button class="battle-target-btn">Comprar agora</button>`;
-}
-
-/* =========================================================
-   FASES (retornam HTML da area de conteudo)
-========================================================= */
-function renderAbertura() {
-  const q = warmupQuestions[state.warmup.index];
-  const revealed = state.warmup.revealed;
-  // ${commentLine("aquecimento — não vale pontos, só pra acordar o cérebro")}
-  return `
-    <div class="phase">
-      <div class="phase-eyebrow">fase 1</div>
-      <h2 class="phase-title">Detector de memória</h2>
-      <div class="warmup-card">
-        <div class="warmup-index">Pergunta ${state.warmup.index + 1} de ${warmupQuestions.length}</div>
-        <p class="warmup-q">${q.q}</p>
-        ${revealed ? `<p class="warmup-hint">${q.hint}</p>` : ""}
-        <button class="btn-ghost" data-action="warmup-toggle-hint">${icon(revealed ? "eyeOff" : "eye")} ${revealed ? "Esconder dica" : "Revelar dica"}</button>
-      </div>
-      <div class="stepper-nav">
-        <button class="btn-outline" data-action="warmup-prev" ${state.warmup.index === 0 ? "disabled" : ""}>${icon("chevronLeft")} Anterior</button>
-        <button class="btn-outline" data-action="warmup-next" ${state.warmup.index === warmupQuestions.length - 1 ? "disabled" : ""}>Próxima ${icon("chevronRight")}</button>
-      </div>
-    </div>`;
-}
-
-function renderRevisao() {
-  const i = state.revisao.index;
-  const t = topics[i];
-  const revealed = state.revisao.revealed;
-  return `
-    <div class="phase">
-      <div class="phase-eyebrow">fase 2</div>
-      <h2 class="phase-title">Revisão relâmpago</h2>
-
-      <div class="topic-stepper">
-        ${topics.map((tp, idx) => `<button class="step-dot ${idx === i ? "step-dot-active" : ""} ${idx < i ? "step-dot-done" : ""}" data-action="topic-goto" data-idx="${idx}">${idx + 1}</button>`).join("")}
-      </div>
-
-      <div class="round-card">
-        <div class="round-header">
-          <span class="ext-badge ext-${t.ext}">tópico-${String(i + 1).padStart(2, "0")}.${t.ext}</span>
-        </div>
-        <h3 class="round-title">${t.title}</h3>
-        <p class="round-prompt">${t.prompt}</p>
-        <div class="round-challenge">${t.challenge()}</div>
-        ${t.reveal ? `
-          <button class="btn-ghost" data-action="topic-toggle-reveal">${icon(revealed ? "eyeOff" : "eye")} ${revealed ? "Esconder correção" : "Revelar correção"}</button>
-          ${revealed ? `<div class="round-reveal">${t.reveal()}</div>` : ""}
-        ` : ""}
-      </div>
-
-      <div class="stepper-nav">
-        <button class="btn-outline" data-action="topic-prev" ${i === 0 ? "disabled" : ""}>${icon("chevronLeft")} Tópico anterior</button>
-        <button class="btn-outline" data-action="topic-next" ${i === topics.length - 1 ? "disabled" : ""}>Próximo tópico ${icon("chevronRight")}</button>
-      </div>
-    </div>`;
-}
-
-function renderPratica() {
-  return `
-    <div class="phase">
-      <div class="phase-eyebrow">fase 3</div>
-      <h2 class="phase-title">Reconstrua o card</h2>
-      ${commentLine("use o CodePen ou VS Code")}
-
-      <p class="prose">Este é o resultado que vocês precisam reproduzir com código:</p>
-      <div class="target-stage">${targetCardHTML()}</div>
-
-      <p class="prose" style="margin-top:24px">O card precisa obrigatoriamente ter:</p>
-      <ul class="req-list">
-        <li><span class="req-tag">semântica</span> tags semânticas (não só div genérica) - por exemplo, um <code>&lt;article&gt;</code> envolvendo o card</li>
-        <li><span class="req-tag">flexbox</span> o layout interno organizado com flexbox</li>
-        <li><span class="req-tag">id</span> um id em algo único do card</li>
-        <li><span class="req-tag">class</span> uma class reutilizável (pense em como ela serviria para vários cards)</li>
-        <li><span class="req-tag">hover</span> um efeito de :hover com transition suave (pode ser diferente do modelo, sejam criativos)</li>
-      </ul>
-    </div>`;
-}
-
-function renderBattle() {
-  const show = state.battle.showSolution;
-  return `
-    <div class="phase">
-      <div class="phase-eyebrow">fase 4 · exercício relâmpago</div>
-      <h2 class="phase-title">CSS Final Battle</h2>
-      ${commentLine("quem chegar mais perto do alvo, visualmente, ganha o ponto")}
-
-      <p class="prose">Recriem este botão: cantos arredondados, e ao passar o mouse ele aumenta e muda de cor suavemente.</p>
-      ${commentLine("Cores utilizadas: fundo #29263f e hover #ff5d8f")}
-      <div class="target-stage">${battleTargetHTML()}</div>
-
-      <button class="btn-ghost" style="margin-top:20px" data-action="battle-toggle-solution">${icon(show ? "eyeOff" : "eye")} ${show ? "Esconder solução" : "Revelar solução"}</button>
-      ${show ? `<div class="round-reveal">${codeBlock(battleSolution, "css", "style.css")}</div>` : ""}
-    </div>`;
-}
-
-const PHASE_RENDERERS = {
-  abertura: renderAbertura,
-  revisao: renderRevisao,
-  pratica: renderPratica,
-  battle: renderBattle,
-};
-
-/* =========================================================
-   WIDGET FLUTUANTE (cronômetro)
-========================================================= */
-function renderFloating() {
-  document.getElementById("floating-container").innerHTML = timerWidgetHTML();
-}
-function timerWidgetHTML() {
-  const { seconds, running, open } = state.timer;
-  const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const ss = String(seconds % 60).padStart(2, "0");
-  const low = seconds <= 10 && seconds > 0;
-  const done = seconds === 0;
-  const presets = [120, 180, 300, 600];
-  return `
-    <div class="floating floating-left">
-      ${open ? `
-        <div class="float-panel timer-panel">
-          <div class="timer-display ${low ? "timer-low" : ""} ${done ? "timer-done" : ""}" id="timer-digits">${mm}:${ss}</div>
-          ${done ? `<div class="timer-alert">tempo esgotado</div>` : ""}
-          <div class="timer-presets">
-            ${presets.map(p => `<button class="chip" data-action="timer-preset" data-seconds="${p}">${p / 60}min</button>`).join("")}
-          </div>
-          <div class="timer-controls">
-            <button class="icon-btn" data-action="timer-play-pause" ${seconds === 0 ? "disabled" : ""}>${icon(running ? "pause" : "play", 18)}</button>
-            <button class="icon-btn" data-action="timer-reset">${icon("rotate", 18)}</button>
-          </div>
-        </div>` : ""}
-      <button class="float-fab" data-action="timer-toggle-open">${icon("clock", 18)} <span id="timer-fab-digits">${mm}:${ss}</span></button>
-    </div>`;
-}
-
-/* =========================================================
-   RENDER PRINCIPAL
-========================================================= */
-function renderTabbar() {
-  document.getElementById("tabbar").innerHTML = TABS.map(t => `
-    <button class="tab ${state.activeTab === t.id ? "tab-active" : ""}" data-action="tab" data-tab="${t.id}">
-      <span class="tab-ext tab-ext-${t.ext}"></span>${t.label}
-    </button>`).join("");
-}
-function renderPhase() {
-  document.getElementById("phase-content").innerHTML = PHASE_RENDERERS[state.activeTab]();
-}
-function renderAll() {
-  renderTabbar();
-  renderPhase();
-  renderFloating();
-}
-
-/* =========================================================
-   TIMER (setInterval independente do render completo)
-========================================================= */
-function startTimerInterval() {
-  stopTimerInterval();
-  state.timer.intervalId = setInterval(() => {
-    if (state.timer.seconds <= 0) {
-      state.timer.running = false;
-      stopTimerInterval();
-      renderFloating();
-      return;
+    if (type === 'click') {
+      // Som curto de clique
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } else if (type === 'correct') {
+      // Acorde alegre de sucesso
+      osc.type = 'triangle';
+      // Nota 1
+      osc.frequency.setValueAtTime(330, now); // E4
+      osc.frequency.setValueAtTime(440, now + 0.08); // A4
+      osc.frequency.setValueAtTime(554, now + 0.16); // C#5
+      osc.frequency.setValueAtTime(660, now + 0.24); // E5
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } else if (type === 'wrong') {
+      // Som grave de erro
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.linearRampToValueAtTime(90, now + 0.25);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } else if (type === 'victory') {
+      // Fanfarra curta
+      const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+      notes.forEach((freq, idx) => {
+        const oscNode = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscNode.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        oscNode.type = 'sine';
+        oscNode.frequency.setValueAtTime(freq, now + idx * 0.15);
+        gainNode.gain.setValueAtTime(0.15, now + idx * 0.15);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.15 + 0.25);
+        
+        oscNode.start(now + idx * 0.15);
+        oscNode.stop(now + idx * 0.15 + 0.25);
+      });
     }
-    state.timer.seconds -= 1;
-    updateTimerDigitsOnly();
-    if (state.timer.seconds === 0) {
-      state.timer.running = false;
-      stopTimerInterval();
-      renderFloating();
-    }
-  }, 1000);
-}
-function stopTimerInterval() {
-  if (state.timer.intervalId) {
-    clearInterval(state.timer.intervalId);
-    state.timer.intervalId = null;
+  } catch (e) {
+    console.log("Áudio não pôde ser reproduzido: ", e);
   }
 }
-function updateTimerDigitsOnly() {
-  const { seconds } = state.timer;
-  const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
-  const ss = String(seconds % 60).padStart(2, "0");
-  const digitsEl = document.getElementById("timer-digits");
-  const fabEl = document.getElementById("timer-fab-digits");
-  const low = seconds <= 10 && seconds > 0;
-  if (digitsEl) {
-    digitsEl.textContent = `${mm}:${ss}`;
-    digitsEl.classList.toggle("timer-low", low);
+
+// ==========================================================================
+// SISTEMA DE NAVEGAÇÃO DE TABS E PROGRESSO
+// ==========================================================================
+const tabs = document.querySelectorAll('.tab-panel');
+const navItems = document.querySelectorAll('.nav-item');
+const progressBar = document.getElementById('progressBar');
+
+// Ordem das tabs para cálculo de progresso
+const tabsOrder = [
+  'welcome',
+  'class-concept',
+  'id-concept',
+  'compare-table',
+  'game-associate',
+  'game-code',
+  'sandbox',
+  'practice'
+];
+
+function switchTab(tabId) {
+  // Ocultar todas as tabs e desativar menu lateral
+  tabs.forEach(tab => tab.classList.remove('active'));
+  navItems.forEach(item => item.classList.remove('active'));
+
+  // Ativar tab selecionada
+  const activeTab = document.getElementById(tabId);
+  if (activeTab) {
+    activeTab.classList.add('active');
   }
-  if (fabEl) fabEl.textContent = `${mm}:${ss}`;
+
+  // Ativar item correspondente na barra lateral
+  const activeNavItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+  if (activeNavItem) {
+    activeNavItem.classList.add('active');
+  }
+
+  // Atualizar barra de progresso
+  const index = tabsOrder.indexOf(tabId);
+  if (index !== -1) {
+    const percent = ((index + 1) / tabsOrder.length) * 100;
+    progressBar.style.width = `${percent}%`;
+  }
 }
 
-/* =========================================================
-   EVENT DELEGATION
-========================================================= */
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-action]");
-  if (!btn) return;
-  const action = btn.dataset.action;
-
-  switch (action) {
-    case "tab":
-      state.activeTab = btn.dataset.tab;
-      renderAll();
-      break;
-
-    case "warmup-toggle-hint":
-      state.warmup.revealed = !state.warmup.revealed;
-      renderPhase();
-      break;
-    case "warmup-prev":
-      state.warmup.index -= 1;
-      state.warmup.revealed = false;
-      renderPhase();
-      break;
-    case "warmup-next":
-      state.warmup.index += 1;
-      state.warmup.revealed = false;
-      renderPhase();
-      break;
-
-    case "topic-goto":
-      state.revisao.index = parseInt(btn.dataset.idx, 10);
-      state.revisao.revealed = false;
-      renderPhase();
-      break;
-    case "topic-prev":
-      state.revisao.index -= 1;
-      state.revisao.revealed = false;
-      renderPhase();
-      break;
-    case "topic-next":
-      state.revisao.index += 1;
-      state.revisao.revealed = false;
-      renderPhase();
-      break;
-    case "topic-toggle-reveal":
-      state.revisao.revealed = !state.revisao.revealed;
-      renderPhase();
-      break;
-
-    case "flex-justify":
-      state.flex.justify = btn.dataset.value;
-      renderPhase();
-      break;
-    case "flex-align":
-      state.flex.align = btn.dataset.value;
-      renderPhase();
-      break;
-    case "flex-direction-toggle":
-      state.flex.direction = state.flex.direction === "row" ? "column" : "row";
-      renderPhase();
-      break;
-
-    case "transition-toggle-spin":
-      state.transition.spinning = !state.transition.spinning;
-      renderPhase();
-      break;
-
-    case "battle-toggle-solution":
-      state.battle.showSolution = !state.battle.showSolution;
-      renderPhase();
-      break;
-
-    case "timer-toggle-open":
-      state.timer.open = !state.timer.open;
-      renderFloating();
-      break;
-    case "timer-preset":
-      state.timer.seconds = parseInt(btn.dataset.seconds, 10);
-      state.timer.initial = state.timer.seconds;
-      state.timer.running = false;
-      stopTimerInterval();
-      renderFloating();
-      break;
-    case "timer-play-pause":
-      state.timer.running = !state.timer.running;
-      if (state.timer.running) startTimerInterval(); else stopTimerInterval();
-      renderFloating();
-      break;
-    case "timer-reset":
-      state.timer.seconds = state.timer.initial;
-      state.timer.running = false;
-      stopTimerInterval();
-      renderFloating();
-      break;
-  }
+// Event Listeners para botões de navegação lateral
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    playSound('click');
+    switchTab(item.getAttribute('data-tab'));
+  });
 });
 
-document.addEventListener("input", (e) => {
-  const el = e.target.closest("[data-input]");
-  if (!el) return;
-  const type = el.dataset.input;
-
-  if (type === "transition-duration") {
-    state.transition.duration = parseFloat(el.value);
-    const label = document.getElementById("transition-duration-label");
-    const target = document.getElementById("transition-target-btn");
-    if (label) label.textContent = `transition-duration: ${state.transition.duration.toFixed(1)}s`;
-    if (target) target.style.transitionDuration = state.transition.duration + "s";
-  }
+// Event Listeners para botões internos "Próximo" e "Voltar"
+document.querySelectorAll('.next-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    playSound('click');
+    switchTab(btn.getAttribute('data-next'));
+  });
 });
 
-/* =========================================================
-   INICIALIZACAO
-========================================================= */
-renderAll();
+document.querySelectorAll('.prev-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    playSound('click');
+    switchTab(btn.getAttribute('data-prev'));
+  });
+});
+
+
+// ==========================================================================
+// JOGO 1: ASSOCIAÇÃO (ID OU CLASS)
+// ==========================================================================
+const game1Questions = [
+  {
+    title: "O número do seu RG ou CPF",
+    description: "É o seu documento nacional de identidade. Serve para provar quem você é individualmente.",
+    icon: "fa-id-card",
+    answer: "id",
+    explanation: "Correto! Cada cidadão tem um RG/CPF diferente. Como é único, usamos o ID!"
+  },
+  {
+    title: "Camiseta do uniforme da escola",
+    description: "Todos os estudantes da mesma série usam camisetas idênticas da mesma cor para se identificar.",
+    icon: "fa-shirt",
+    answer: "class",
+    explanation: "Perfeito! O uniforme serve para um grupo de pessoas, igual a uma CLASS no CSS."
+  },
+  {
+    title: "O seu apelido (nickname) no Roblox ou Minecraft",
+    description: "O nome que você escolhe para sua conta. O jogo não deixa outra pessoa escolher exatamente o mesmo nome.",
+    icon: "fa-gamepad",
+    answer: "id",
+    explanation: "Isso aí! O nickname é único para cada conta de jogador. É um ID!"
+  },
+  {
+    title: "Sua impressão digital",
+    description: "A marca desenhada na ponta do seu polegar. Nenhuma outra pessoa no mundo tem igual.",
+    icon: "fa-fingerprint",
+    answer: "id",
+    explanation: "Exatamente! Impressões digitais são totalmente exclusivas. Usamos ID!"
+  },
+  {
+    title: "A categoria 'Gato' de um grupo de pets",
+    description: "Vários bichinhos diferentes (Persa, Siamês, Vira-lata) compartilham a característica de serem gatos.",
+    icon: "fa-cat",
+    answer: "class",
+    explanation: "Muito bem! Vários animais podem ser 'Gatos' (mesmo grupo). Usamos CLASS!"
+  },
+  {
+    title: "Tênis da marca Nike",
+    description: "Várias pessoas no mundo compram e usam o mesmo modelo de tênis de uma mesma marca.",
+    icon: "fa-shoe-prints",
+    answer: "class",
+    explanation: "Correto! Um modelo de sapato representa uma categoria ou grupo. Usamos CLASS!"
+  },
+  {
+    title: "A placa de um veículo",
+    description: "A combinação de letras e números que fica na traseira de um carro ou moto.",
+    icon: "fa-car",
+    answer: "id",
+    explanation: "Isso mesmo! Cada carro tem sua própria placa exclusiva para identificação. Usamos ID!"
+  },
+  {
+    title: "Pessoas vestidas de pijama numa festa",
+    description: "Diferentes convidados que se vestiram com a mesma categoria de roupa para dormir.",
+    icon: "fa-bed",
+    answer: "class",
+    explanation: "Ótimo! O pijama é um estilo de roupa compartilhado por várias pessoas. Usamos CLASS!"
+  },
+  {
+    title: "Alunos matriculados no 7º ano",
+    description: "Todos os estudantes que frequentam a mesma série e compartilham as mesmas aulas.",
+    icon: "fa-graduation-cap",
+    answer: "class",
+    explanation: "Correto! A série escolar representa um grupo de estudantes. Usamos CLASS!"
+  },
+  {
+    title: "O número do seu número de celular",
+    description: "O código telefônico de 9 dígitos que permite que as pessoas liguem diretamente para você.",
+    icon: "fa-mobile-screen-button",
+    answer: "id",
+    explanation: "Exato! Cada chip de celular tem um número exclusivo. É um ID!"
+  }
+];
+
+let g1CurrentIndex = 0;
+let g1Score = 0;
+let g1Errors = 0;
+let g1WaitingForNext = false;
+
+// Inicializa os dots de progresso do jogo 1
+function initGame1Dots() {
+  const dotsContainer = document.getElementById('game1-dots');
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < game1Questions.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot';
+    if (i === 0) dot.classList.add('active');
+    dotsContainer.appendChild(dot);
+  }
+}
+
+function loadQuestion() {
+  g1WaitingForNext = false;
+  
+  // Atualizar visual do card
+  const q = game1Questions[g1CurrentIndex];
+  const card = document.getElementById('quiz-card');
+  const iconBox = document.getElementById('quiz-card-icon');
+  const title = document.getElementById('quiz-card-title');
+  const desc = document.getElementById('quiz-card-description');
+  const feedbackBox = document.getElementById('quiz-feedback-box');
+  
+  card.className = "quiz-card-element";
+  feedbackBox.classList.add('hidden');
+  
+  iconBox.innerHTML = `<i class="fa-solid ${q.icon}"></i>`;
+  title.innerText = q.title;
+  desc.innerText = q.description;
+
+  // Atualizar Dots
+  const dots = document.querySelectorAll('#game1-dots .step-dot');
+  dots.forEach((dot, idx) => {
+    dot.classList.remove('active');
+    if (idx === g1CurrentIndex) {
+      dot.classList.add('active');
+    }
+  });
+}
+
+function submitAnswer(userChoice) {
+  if (g1WaitingForNext) return;
+  g1WaitingForNext = true;
+
+  const q = game1Questions[g1CurrentIndex];
+  const isCorrect = userChoice === q.answer;
+  
+  const card = document.getElementById('quiz-card');
+  const feedbackBox = document.getElementById('quiz-feedback-box');
+  const feedbackIcon = document.getElementById('quiz-feedback-icon');
+  const feedbackText = document.getElementById('quiz-feedback-text');
+  const dots = document.querySelectorAll('#game1-dots .step-dot');
+  
+  feedbackBox.classList.remove('hidden');
+
+  if (isCorrect) {
+    g1Score++;
+    document.getElementById('game1-score').innerText = g1Score;
+    card.classList.add('pulse-green');
+    dots[g1CurrentIndex].classList.add('correct');
+    
+    feedbackIcon.innerText = "🎉";
+    feedbackText.innerHTML = `<strong>Acertou!</strong> ${q.explanation}`;
+    playSound('correct');
+  } else {
+    g1Errors++;
+    document.getElementById('game1-errors').innerText = g1Errors;
+    card.classList.add('pulse-red');
+    dots[g1CurrentIndex].classList.add('wrong');
+    
+    feedbackIcon.innerText = "🤔";
+    feedbackText.innerHTML = `<strong>Ops!</strong> A resposta correta seria <strong>${q.answer === 'id' ? '# ID' : '. CLASS'}</strong>.`;
+    playSound('wrong');
+  }
+
+  // Aguardar 2.2 segundos para ler o feedback e passar para a próxima
+  setTimeout(() => {
+    g1CurrentIndex++;
+    if (g1CurrentIndex < game1Questions.length) {
+      loadQuestion();
+    } else {
+      endGame1();
+    }
+  }, 2200);
+}
+
+function endGame1() {
+  document.getElementById('game1-active-screen').classList.add('hidden');
+  const endScreen = document.getElementById('game1-end-screen');
+  endScreen.classList.remove('hidden');
+  
+  const finalMsg = document.getElementById('game1-final-message');
+  const stars = document.getElementById('game1-stars');
+  
+  playSound('victory');
+  
+  if (g1Score === 10) {
+    finalMsg.innerText = "Pontuação Perfeita! Você acertou todas as 10 perguntas! Você é um verdadeiro mestre dos seletores!";
+    stars.innerText = "⭐⭐⭐";
+  } else if (g1Score >= 7) {
+    finalMsg.innerText = `Ótimo trabalho! Você acertou ${g1Score} de 10 perguntas. Está quase perfeito!`;
+    stars.innerText = "⭐⭐";
+  } else {
+    finalMsg.innerText = `Você acertou ${g1Score} de 10 perguntas. Que tal tentar de novo para fixar melhor o conteúdo?`;
+    stars.innerText = "⭐";
+  }
+}
+
+function restartGame1() {
+  g1CurrentIndex = 0;
+  g1Score = 0;
+  g1Errors = 0;
+  
+  document.getElementById('game1-score').innerText = '0';
+  document.getElementById('game1-errors').innerText = '0';
+  
+  document.getElementById('game1-active-screen').classList.remove('hidden');
+  document.getElementById('game1-end-screen').classList.add('hidden');
+  
+  initGame1Dots();
+  loadQuestion();
+}
+
+
+// ==========================================================================
+// JOGO 2: CÓDIGO SECRETO (SINTAXE)
+// ==========================================================================
+const game2Challenges = [
+  {
+    mission: "Estilizar o parágrafo de assinatura que é único no rodapé do site.",
+    html: `&lt;p <span class="hl-blank" id="html-blank">___</span>="assinatura"&gt;Feito com amor&lt;/p&gt;`,
+    css: `<span class="hl-blank" id="css-blank">___</span>assinatura {
+  font-style: italic;
+}`,
+    options: [
+      { text: "class e .", correct: false },
+      { text: "id e #", correct: true },
+      { text: "class e #", correct: false },
+      { text: "id e .", correct: false }
+    ],
+    htmlCorrect: "id",
+    cssCorrect: "#",
+    explanation: "Como é um elemento de rodapé único no site inteiro, usamos ID e o seletor correspondente é #."
+  },
+  {
+    mission: "Colorir de vermelho todas as mensagens de aviso (podem haver várias na mesma página).",
+    html: `&lt;span <span class="hl-blank" id="html-blank">___</span>="aviso"&gt;Atenção!&lt;/span&gt;`,
+    css: `<span class="hl-blank" id="css-blank">___</span>aviso {
+  color: red;
+}`,
+    options: [
+      { text: "id e #", correct: false },
+      { text: "class e .", correct: true },
+      { text: "class e #", correct: false },
+      { text: "id e .", correct: false }
+    ],
+    htmlCorrect: "class",
+    cssCorrect: ".",
+    explanation: "Podem existir vários avisos na página. Logo, é uma CLASS e seu seletor é o ponto (.)."
+  },
+  {
+    mission: "Adicionar uma borda neon ao botão de compra que só existe uma vez no topo.",
+    html: `&lt;button <span class="hl-blank" id="html-blank">___</span>="btn-compra"&gt;Comprar&lt;/button&gt;`,
+    css: `<span class="hl-blank" id="css-blank">___</span>btn-compra {
+  border: 2px solid violet;
+}`,
+    options: [
+      { text: "class e .", correct: false },
+      { text: "class e #", correct: false },
+      { text: "id e #", correct: true },
+      { text: "id e .", correct: false }
+    ],
+    htmlCorrect: "id",
+    cssCorrect: "#",
+    explanation: "Botão de compra principal único! Usamos ID e marcamos no CSS com #."
+  },
+  {
+    mission: "Diminuir o tamanho das letras de todos os parágrafos de ajuda rápida.",
+    html: `&lt;p <span class="hl-blank" id="html-blank">___</span>="texto-ajuda"&gt;Ajuda aqui...&lt;/p&gt;`,
+    css: `<span class="hl-blank" id="css-blank">___</span>texto-ajuda {
+  font-size: 12px;
+}`,
+    options: [
+      { text: "id e #", correct: false },
+      { text: "class e .", correct: true },
+      { text: "id e .", correct: false },
+      { text: "class e #", correct: false }
+    ],
+    htmlCorrect: "class",
+    cssCorrect: ".",
+    explanation: "Queremos mudar todos os parágrafos de ajuda (grupo). Usamos CLASS e no CSS usamos o ponto (.)."
+  },
+  {
+    mission: "Criar um banner com fundo preto que só aparece uma vez no topo da página.",
+    html: `&lt;div <span class="hl-blank" id="html-blank">___</span>="banner-topo"&gt;Bem-vindo!&lt;/div&gt;`,
+    css: `<span class="hl-blank" id="css-blank">___</span>banner-topo {
+  background-color: black;
+}`,
+    options: [
+      { text: "class e .", correct: false },
+      { text: "id e #", correct: true },
+      { text: "class e #", correct: false },
+      { text: "id e .", correct: false }
+    ],
+    htmlCorrect: "id",
+    cssCorrect: "#",
+    explanation: "Um banner exclusivo de topo de página. Usamos ID e no CSS usamos a hashtag (#)."
+  }
+];
+
+let g2CurrentIndex = 0;
+let g2Waiting = false;
+
+function loadGame2Challenge() {
+  g2Waiting = false;
+  const c = game2Challenges[g2CurrentIndex];
+  
+  // Elementos do DOM
+  document.getElementById('game2-current').innerText = g2CurrentIndex + 1;
+  document.getElementById('game2-mission-text').innerText = c.mission;
+  document.getElementById('game2-html-snippet').innerHTML = `<code>&lt;h1 <span class="hl-blank" id="html-blank">___</span>="site"&gt; site &lt;/h1&gt;</code>`; // reset placeholder
+  
+  // Atualizar os snippets de código
+  document.getElementById('game2-html-snippet').innerHTML = `<code>${c.html}</code>`;
+  document.getElementById('game2-css-snippet').innerHTML = `<code>${c.css}</code>`;
+  
+  // Resetar feedback
+  const feedbackBox = document.getElementById('game2-feedback-box');
+  feedbackBox.classList.add('hidden');
+  
+  // Gerar opções de botões
+  const optionsGrid = document.getElementById('game2-options');
+  optionsGrid.innerHTML = '';
+  
+  c.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-code-option';
+    btn.innerHTML = `HTML: <strong>${opt.text.split(' e ')[0]}</strong> | CSS: <strong>${opt.text.split(' e ')[1]}</strong>`;
+    btn.onclick = () => checkGame2Answer(opt.correct, btn, idx);
+    optionsGrid.appendChild(btn);
+  });
+}
+
+function checkGame2Answer(isCorrect, btnNode, optionIdx) {
+  if (g2Waiting) return;
+  g2Waiting = true;
+  
+  const c = game2Challenges[g2CurrentIndex];
+  const htmlBlank = document.getElementById('html-blank');
+  const cssBlank = document.getElementById('css-blank');
+  const feedbackBox = document.getElementById('game2-feedback-box');
+  const feedbackIcon = document.getElementById('game2-feedback-icon');
+  const feedbackText = document.getElementById('game2-feedback-text');
+  
+  feedbackBox.classList.remove('hidden');
+  
+  if (isCorrect) {
+    playSound('correct');
+    btnNode.classList.add('correct-btn');
+    
+    // Revelar respostas corretas nos blanks do código
+    htmlBlank.innerText = c.htmlCorrect;
+    htmlBlank.classList.add('correct-blank');
+    cssBlank.innerText = c.cssCorrect;
+    cssBlank.classList.add('correct-blank');
+    
+    feedbackIcon.innerText = "🎉";
+    feedbackText.innerHTML = `<strong>Incrível!</strong> ${c.explanation}`;
+  } else {
+    playSound('wrong');
+    btnNode.classList.add('wrong-btn');
+    
+    // Revelar mesmo que tenha errado
+    htmlBlank.innerText = c.htmlCorrect;
+    htmlBlank.classList.add('wrong-blank');
+    cssBlank.innerText = c.cssCorrect;
+    cssBlank.classList.add('wrong-blank');
+    
+    feedbackIcon.innerText = "🤔";
+    feedbackText.innerHTML = `<strong>Ops! O correto era:</strong> HTML: <code>${c.htmlCorrect}</code> e CSS: <code>${c.cssCorrect}</code>.`;
+  }
+  
+  // Próxima pergunta
+  setTimeout(() => {
+    g2CurrentIndex++;
+    if (g2CurrentIndex < game2Challenges.length) {
+      loadGame2Challenge();
+    } else {
+      endGame2();
+    }
+  }, 3000);
+}
+
+function endGame2() {
+  document.getElementById('game2-active-screen').classList.add('hidden');
+  document.getElementById('game2-end-screen').classList.remove('hidden');
+  playSound('victory');
+}
+
+function restartGame2() {
+  g2CurrentIndex = 0;
+  document.getElementById('game2-active-screen').classList.remove('hidden');
+  document.getElementById('game2-end-screen').classList.add('hidden');
+  loadGame2Challenge();
+}
+
+
+// ==========================================================================
+// LABORATÓRIO DOS ALIENS (SANDBOX VISUAL)
+// ==========================================================================
+const btnControls = document.querySelectorAll('.btn-control');
+const alienBobBody = document.querySelector('#alien-bob .alien-body');
+const alienMelBody = document.querySelector('#alien-mel .alien-body');
+const alienKingBody = document.querySelector('#alien-king .alien-body');
+const alienKingCrown = document.querySelector('#alien-king .alien-crown');
+
+const alienBobCard = document.getElementById('alien-bob');
+const alienMelCard = document.getElementById('alien-mel');
+const alienKingCard = document.getElementById('alien-king');
+
+// Event listener para os botões do sandbox
+btnControls.forEach(btn => {
+  btn.addEventListener('click', () => {
+    playSound('click');
+    
+    const target = btn.getAttribute('data-target');
+    const style = btn.getAttribute('data-style');
+    
+    if (target === 'class') {
+      applyClassStyle(style, btn);
+    } else if (target === 'id') {
+      applyIdStyle(style, btn);
+    }
+  });
+});
+
+function applyClassStyle(style, btnNode) {
+  // Remove ativo de outros botões do mesmo tipo de estilo (ex: cores)
+  if (style.startsWith('color-')) {
+    document.querySelectorAll('[data-target="class"][data-style^="color-"]').forEach(b => b.classList.remove('active'));
+    
+    // Limpa cores atuais
+    alienBobBody.classList.remove('green-color', 'orange-color');
+    alienMelBody.classList.remove('green-color', 'orange-color');
+    
+    if (style === 'color-green') {
+      alienBobBody.classList.add('green-color');
+      alienMelBody.classList.add('green-color');
+      btnNode.classList.add('active');
+    } else if (style === 'color-orange') {
+      alienBobBody.classList.add('orange-color');
+      alienMelBody.classList.add('orange-color');
+      btnNode.classList.add('active');
+    }
+  } 
+  else if (style === 'jump-anim') {
+    alienBobCard.classList.toggle('jump');
+    alienMelCard.classList.toggle('jump');
+    btnNode.classList.toggle('active');
+  } 
+  else if (style === 'clear') {
+    // Reseta todos os botões de controle de classe
+    document.querySelectorAll('[data-target="class"]').forEach(b => b.classList.remove('active'));
+    
+    alienBobBody.classList.remove('green-color', 'orange-color');
+    alienMelBody.classList.remove('green-color', 'orange-color');
+    alienBobCard.classList.remove('jump');
+    alienMelCard.classList.remove('jump');
+  }
+}
+
+function applyIdStyle(style, btnNode) {
+  if (style === 'crown-wear') {
+    if (alienKingCrown.classList.contains('hidden-crown')) {
+      alienKingCrown.classList.remove('hidden-crown');
+      alienKingCrown.classList.add('show-crown');
+      btnNode.classList.add('active');
+    } else {
+      alienKingCrown.classList.remove('show-crown');
+      alienKingCrown.classList.add('hidden-crown');
+      btnNode.classList.remove('active');
+    }
+  } 
+  else if (style === 'size-big') {
+    alienKingBody.classList.toggle('big-size');
+    btnNode.classList.toggle('active');
+  } 
+  else if (style === 'spin-anim') {
+    alienKingCard.classList.toggle('spin');
+    btnNode.classList.toggle('active');
+  } 
+  else if (style === 'clear') {
+    document.querySelectorAll('[data-target="id"]').forEach(b => b.classList.remove('active'));
+    
+    alienKingCrown.classList.remove('show-crown');
+    alienKingCrown.classList.add('hidden-crown');
+    alienKingBody.classList.remove('big-size');
+    alienKingCard.classList.remove('spin');
+  }
+}
+
+// Reset Sandbox Geral
+document.getElementById('btn-reset-sandbox').addEventListener('click', () => {
+  playSound('click');
+  
+  // Limpar botões de status ativo
+  btnControls.forEach(b => b.classList.remove('active'));
+  
+  // Resetar Bob e Mel
+  alienBobBody.className = 'alien-body body-classic';
+  alienMelBody.className = 'alien-body body-classic';
+  alienBobCard.className = 'alien-card';
+  alienMelCard.className = 'alien-card';
+  
+  // Resetar Rei
+  alienKingBody.className = 'alien-body body-king';
+  alienKingCard.className = 'alien-card';
+  alienKingCrown.className = 'alien-crown hidden-crown';
+});
+
+
+// ==========================================================================
+// JANELA POP-UP DE PARABÉNS (CONGRATS MODAL)
+// ==========================================================================
+const congratsModal = document.getElementById('congrats-modal');
+
+document.getElementById('btn-congratulations').addEventListener('click', () => {
+  playSound('victory');
+  document.getElementById('modal-score').innerText = `${g1Score}/10`;
+  congratsModal.classList.remove('hidden');
+});
+
+function closeModal() {
+  playSound('click');
+  congratsModal.classList.add('hidden');
+}
+
+
+// ==========================================================================
+// INICIALIZAÇÃO DO JOGO AO CARREGAR A PÁGINA
+// ==========================================================================
+window.addEventListener('DOMContentLoaded', () => {
+  initGame1Dots();
+  loadQuestion();
+  loadGame2Challenge();
+});
