@@ -82,9 +82,9 @@ const divsReveal = `<div class="card">
     <img src="tenis.jpg" alt="Tênis branco">
   </div>
   <div class="card-info">
-    <div class="card-title">Tênis Runner</div>
-    <div class="card-price">R$ 299,90</div>
-    <div class="card-button">Comprar</div>
+    <h4 class="card-title">Tênis Runner</h4>
+    <p class="card-price">R$ 299,90</p>
+    <button class="card-button">Comprar</button>
   </div>
 </div>`;
 
@@ -122,6 +122,7 @@ const battleSolution = `.btn {
 }`;
 
 const warmupQuestions = [
+  { q: "Qual foi a parte mais difícil do semestre passado pra vocês?", hint: "Não vale pontos" },
   { q: "O que significa a sigla HTML? E CSS?", hint: "Pegadinha, sem dica! Vai outra pergunta: São consideradas linguagens de...?" },
   { q: "O que uma &lt;div&gt; faz sozinha, sem nenhum CSS aplicado?", hint: "Nada de especial visualmente." },
   { q: "Qual a diferença entre id e class?", hint: "Elemento único VS Repetir em vários elementos." },
@@ -133,7 +134,6 @@ const warmupQuestions = [
   { q: "Posso usar duas classes diferentes no mesmo elemento? E dois id's?", hint: "Por exemplo: .btn .btn-destaque" },
   { q: "Qual propriedade eu uso para quebrar uma linha dentro de um container flex?", hint: "Também é um nome de um tipo de lanche." },
   { q: "Pra que serve o ::placeholder?", hint: "Está presente nos formulários." },
-  { q: "Qual foi a parte mais difícil do semestre passado pra vocês?", hint: "Não vale pontos" },
 ];
 
 const topics = [
